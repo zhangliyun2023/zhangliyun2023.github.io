@@ -122,13 +122,14 @@
   .r-check{margin-top:14px}
   .check-box{
     background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:12px;
-    font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--muted);
+    font-size:13px;line-height:1.8;color:var(--muted);
     overflow-x:auto;
   }
-  .check-box::before{
+  .check-box.is-cmd{font-family:var(--mono);font-size:12.5px;line-height:1.7}
+  .check-box.is-cmd::before{
     content:"$";color:var(--accent);font-size:12px;font-weight:600;margin-right:8px;
   }
-  .check-box code{color:var(--ink);font-family:inherit;white-space:nowrap}
+  .check-box code{color:var(--ink);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
   .check-box b{color:var(--ink);font-weight:600;font-family:inherit}
 
   /* ---------- §5 收尾 ---------- */
@@ -176,13 +177,15 @@
     .r-top .r-num{
       display:inline-block;margin-right:8px;vertical-align:baseline;font-size:15px;
     }
-    .r-title{display:inline;font-size:16.5px}
-    .r-titlewrap{margin-bottom:12px}
+    .r-title{display:inline;font-size:16.5px;margin:0}
+    .r-titlewrap{display:inline}
+    .r-top{margin-bottom:12px}
     .lbl{
       display:inline-block;padding:1px 7px;margin-bottom:6px;line-height:1.6;
       background:var(--chip);border:1px solid var(--line);border-radius:4px;
     }
-    .check-box{font-size:12px}
+    .check-box{font-size:12.5px}
+    .check-box.is-cmd{font-size:12px}
     .scripts{grid-template-columns:1fr}
     .scripts .hd{display:none}
   }
@@ -191,7 +194,7 @@
 <body>
 <div class="wrap">
 
-  <a class="back" href="./index.html#mirawork">
+  <a class="back" href="./index.html#desktop-agent">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>
     返回项目集
   </a>
@@ -200,13 +203,13 @@
     <p class="eyebrow">Transferable Practice</p>
     <h1>可沉淀的方法论</h1>
     <p class="tagline">
-      在一个桌面 Agent 产品和一条文档自动生成链路上做了一年多的实现与验收，
+      在一个桌面 Agent 产品和一条文档自动生成链路上做实现与验收，
       真正能带走的不是代码，是一批可以照抄到别的项目的判据。
       下面每一条都写成三层：<b>规则</b>（能直接执行）、<b>为什么</b>（哪次事故换来的）、<b>怎么验</b>（一条能跑的命令或一个能失败的断言）。
     </p>
     <p class="note">
-      内容来自内部工程规范与事故复盘的<b>去标识化提炼</b>：不含公司名、内部项目名、内部链接与任何生产配置；
-      涉及的产品一律表述为「某桌面 Agent 产品」「某文档生成链路」。文中所有数字均为实测记录值，未做外推。
+      以下为个人在实践中沉淀的<b>工程笔记</b>：已隐去源码、生产配置与内部链接，涉及的产品一律表述为「某桌面 Agent 产品」「某文档生成链路」。
+      文中保留的数字均为实测记录值，未做外推；来源另有出处的条目已在该条内注明。
     </p>
   </header>
 
@@ -251,11 +254,13 @@
       <p>
         绿只证明当前世界是好的，不证明这条用例押在了缺陷上。一条在「没有修复的世界」里也绿的测试，<b>等于没有测到东西</b>。
         反过来，一个修复有多处改动时，只撤其中一处却没转红，说明撤错了地方，不是探针有效。
+        <b>来源说明：</b>「红-绿撤回环」本身是既有公开实践（如 <b>verification-before-completion</b> 一类公开 skill 的 write → pass → revert → must fail → restore → pass）；
+        本条的自有增量是两点——<em>红的内容必须与用户症状同形</em>，以及<em>主进程改动必须重启实例</em>，这两点有事故背书。
       </p>
     </div>
     <div class="r-check">
       <div class="lbl">Check</div>
-      <div class="check-box">
+      <div class="check-box is-cmd">
         <code>git checkout HEAD -- &lt;显式路径&gt;</code> 撤回 → <b>主进程改动必须重启实例</b>（只有渲染层能靠 HMR，不重启就退代码，探针读到的仍是修复版）→ 重跑同一条用例。
         撤回前后各跑一次 <code>git diff --stat</code>，确认只有自己那几行在动。绝不用 <code>git stash</code>，也不用「整份 cp 快照再还原」。
       </div>
@@ -279,7 +284,8 @@
       <p>
         乐观更新会让只看界面的断言全线假绿：界面已经变了，数据根本没落盘。
         而且同一个事实（存在性、内容版本）一旦在多处各自维护，就会长出「<b>同一个文件四个地方四种状态</b>」，对用户表现为「删不掉 / 不刷新 / 凭空消失」。
-        这三层结构不是某个框架特有的——本地状态 / 进程边界 / 持久化，桌面端、移动端、带缓存的 Web、CLI+DB 都是同一个洞。
+        「界面 + 进程边界 + 持久化」三处对齐是 <b>Electron 场景下最值钱的一条</b>，本条的实测背书全部来自该场景。
+        本地状态 / 进程边界 / 持久化的同构在移动端、带缓存的 Web、CLI+DB 上看起来也成立，但那是<em>推论，未在其他形态上验证</em>。
       </p>
     </div>
     <div class="r-check">
@@ -308,8 +314,8 @@
     <div class="r-why">
       <div class="lbl">Why</div>
       <p>
-        典型失效：渲染器按输入文件名命名输出（喂 <b>p3-bare.pptx</b> 出 <b>p3-bare.png</b>），代码去找 <b>p3.png</b>，
-        于是每一页都「成功但找不到文件」，整本静默降级到只能画 <b>50/177</b> 个形状、画不出原生图表的备用渲染器——<b>日志一切正常，退出码 0</b>。
+        典型失效：渲染器按输入文件名命名输出（喂 <b>&lt;name&gt;-variant</b> 出 <b>&lt;name&gt;-variant.png</b>），代码去找 <b>&lt;name&gt;.png</b>，
+        于是每一页都「成功但找不到文件」，整本静默降级到<b>只画得出不到三分之一形状</b>、画不出原生图表的备用渲染器——<b>日志一切正常，退出码 0</b>。
         而降级发生在所有检查之前，所以后面每一层视觉与功能检查都跑在残缺产物上，<b>全部白跑</b>。
       </p>
     </div>
@@ -345,11 +351,11 @@
     <div class="r-check">
       <div class="lbl">Check</div>
       <div class="check-box">
-        <code>dev-session.mjs status</code> 直接报出当前处于哪一态。配套两条硬约束：detached 子进程的 stdio <b>必须是 fd 不能是 pipe</b>
+        <b>阶段推进器</b>的探活子命令直接报出当前处于哪一态。配套两条硬约束：detached 子进程的 stdio <b>必须是 fd 不能是 pipe</b>
         （<code>openSync</code> + <code>["ignore", fd, fd]</code> + <code>unref</code> + <code>closeSync</code>）——否则父进程一退出读端就关，
         仍在跑的主进程下一次 <code>console.log</code> 直接 EPIPE 未捕获崩溃，表现成「一直登不上」加一地孤儿进程；
         要看输出用 <code>readFileSync</code> 取日志尾巴，别 <code>on("data")</code>。
-        阶段行也别接 <code>| tail</code> / <code>| head</code>，管道会把输出憋到进程结束才吐，要留档就 <code>&gt; log 2&gt;&amp;1</code> 再另开窗口 <code>tail -f</code>。
+        阶段日志行也别接 <code>| tail</code> / <code>| head</code>，管道会把输出憋到进程结束才吐，要留档就 <code>&gt; log 2&gt;&amp;1</code> 再另开窗口 <code>tail -f</code>。
       </div>
     </div>
   </section>
@@ -498,9 +504,9 @@
     <div class="r-why">
       <div class="lbl">Why</div>
       <p>
-        真实代价样本：把「框挨得近」也判成阻断，三份本来没问题的文档报出 <b>16 处假阻断</b>；
-        而流程写着「0 阻断即停、警告不展开」，于是所有人开始整体无视阻断项。
-        同一份文档的 <b>20 处</b>报警里，<b>16 处</b>属于「换行后仍在框内」这种应该降级为警告的形态。
+        真实代价样本：把「框挨得近」也判成阻断，一批本来没问题的文档报出大量假阻断；
+        当流程要求阻断项清零才能继续时，人会转而整体无视阻断这个信号。
+        同一份文档的报警里，<b>约八成</b>属于「换行后仍在框内」这种应该降级为警告的形态。
       </p>
     </div>
     <div class="r-check">
@@ -543,9 +549,9 @@
     <div class="r-check">
       <div class="lbl">Check</div>
       <div class="check-box">
-        <code>check_text_fit.py &lt;deck&gt; --slack 0.92 --safe-margin 24</code>，
+        用<b>版式几何门禁脚本</b>按 <b>0.92</b> 装箱余量、<b>24px</b> 安全区跑一遍，
         退出码 <b>0</b> = 无阻断项（可能仍有警告）、<b>1</b> = 有阻断项，可直接当出片前 gate；
-        <code>--fix</code> 只认三种 kind，做文本级改写（只改 bounds 数字、只包一层 span，保留键顺序与注释），修完自动重跑自检。
+        自动修复只处理少数几类可安全改写的形态，做文本级改写（只改 bounds 数字、只包一层 span，保留键顺序与注释），修完自动重跑自检。
         修复器必须排在渲染<b>之前</b>——它不看渲染产物，排后面白费一整轮渲染。
       </div>
     </div>
@@ -573,7 +579,7 @@
     <div class="r-check">
       <div class="lbl">Check</div>
       <div class="check-box">
-        <code>test_layout_checks.py</code>：<b>13 例</b>全内联构造、只依赖标准库、不读任何外部文件。分三类——
+        <b>门禁标定集</b>：<b>13 例</b>全内联构造、只依赖标准库、不读任何外部文件。分三类——
         真缺陷必须报出（<b>262→307</b>、<b>126→158</b>、正文真叠字约 <b>6px</b>）、三份逐页看过的成品必须<b>保持沉默</b>、
         四类已知误报形态必须消除（横向不相交却报重叠 / 并排等高标签垂直 gap 恒为负 / 单行 12px 距页脚净空 6px 被误判 / 30px 字在 48px 框内居中被误判）。
         <b>判据与它的回归集必须放在一起，改判据先跑这组。</b>
@@ -595,19 +601,17 @@
       </div>
       <div class="lbl is-rule">Rule</div>
       <p class="r-rule">
-        「每张 issue 各自单测绿 + 各自真机验过 = 这个版本可以发」是错觉。
-        合批发布前必须做一轮<b>按组合走</b>的穷举复验，而不是按 issue 逐张重看。
+        「每条修复各自单测绿 + 各自真机验过 = 这个版本可以发」是错觉。
+        合并发布前必须做一轮<b>按组合走</b>的穷举复验，而不是按条目逐条重看。
       </p>
     </div>
     <div class="r-why">
       <div class="lbl">Why</div>
       <p>
-        实测样本：<b>12 张</b> issue 全部单测绿、类型检查绿、各自也做过真机验证，穷举复验仍查出 <b>14 条缺陷，其中 3 条是这一批修复自己引入的回归</b>。
+        实测样本：一批各自单测绿、类型检查绿、也各自做过真机验证的修复，合并之后穷举复验<b>仍查出若干缺陷，其中一部分是本批修复自己引入的回归</b>。
         归因分布里<b>没有一条是「实现漏了」，全部是「组合没试过」</b>——所以复验的切分方式必须换轴。
-        两个具体形态值得单独盯：一是「<b>打回已上线行为</b>」（把删除广播改成直接调注册表后，某组件的订阅成了死代码，
-        一条已上线的行为被静默打回，而它的测试是手动派发事件，永远测不出）；
-        二是<b>两条产品规则可能正面冲突且都「实现正确」</b>（「被动过的东西消失了就静默移除」与「文件消失了必须显示失效」无法同时成立，
-        根因是判据把创建它的那次写入也算成了「动过」）。
+        两个形态值得单独盯：一是「<b>打回已上线行为</b>」——改事件通路时，某个订阅方悄悄变成死代码，一条已上线的行为被静默打回，
+        而它的测试是手动派发事件，永远测不出；二是<b>两条互斥的状态规则可能都「实现正确」</b>，冲突只在组合场景下显形。
       </p>
     </div>
     <div class="r-check">
@@ -635,8 +639,8 @@
     <div class="r-why">
       <div class="lbl">Why</div>
       <p>
-        挂掉一条、修好一条，数目照样对得上。实测样本：<b>纯主干两次采样分别是 13 条和 12 条失败</b>；
-        另一次全量跑出 <b>120+ 条</b>同一模块的级联失败，而单独跑该文件 <b>204/204 全绿</b>。
+        挂掉一条、修好一条，数目照样对得上。实测样本：<b>纯主干连续两次全量采样，得到的失败集条数不同，且失败的不是同一批用例</b>；
+        另一次全量出现同一模块的大面积级联失败，而<b>单独跑该文件全绿</b>。
         抖动是<b>规模的属性</b>，不是项目的属性——所以既会让人把套件抖动误判成自己引入的回归，也会反过来漏掉真回归。
       </p>
     </div>
@@ -657,20 +661,21 @@
 
   <div class="wrapup">
     <p>
-      上面每一条单独看都是经验；能不能被别人拿走，取决于它被放在哪一层。所以整包按<b>三层</b>拆：
+      上面每一条单独看都是经验；能不能被别人拿走，取决于它被放在哪一层。所以整包按<b>三层</b>拆
+      （这里说的三层结构，指的是<b>桌面真机验收</b>与<b>文档生成门禁</b>这两条自研主线；
+      同包内另有收录的第三方 skill——如 worktree 并行、完成前验证、并行 agent 派发——以及基于 <b>chenglou/pretext</b> 的版式基线件，不在此列）：
     </p>
     <ul>
-      <li><b>通用层</b>——只写判据与硬约束，<b>不出现任何产品名</b>。比如桌面验收侧的通用层把业务耦合收敛成恰好 <b>5 个钩子</b>
-        （<code>appRoot</code> / <code>launch</code> / <code>isMainWindow</code> / <code>ensureReady</code> / <code>profilePrefix</code>），
-        阶段推进、超时、探活、保活、收尾全部不用使用者写；文档生成侧的绑定层则只需填 <b>6 件事</b>
-        （DSL、转换器、脚本、渲染器探测顺序、图片生成网关等），判据一律留在通用层。</li>
+      <li><b>通用层</b>——只写判据与硬约束，<b>不出现任何产品名</b>。比如桌面验收侧的通用层把业务耦合收敛到<b>个位数个显式钩子</b>
+        （应用根目录、启动、主窗口判定、就绪等待、临时 profile 前缀这一类），
+        阶段推进、超时、探活、保活、收尾全部不用使用者写；文档生成侧的绑定层则只需填入 DSL、转换器、渲染器探测顺序、素材生成通道等<b>少数几项</b>，判据一律留在通用层。</li>
       <li><b>绑定层</b>——一份填好的真实例子，用来示范「该绑定哪几件事」。换产品只重写这一层。</li>
-      <li><b>事故簿</b>——单独存放「这条规则是哪次事故换来的」，<b>故意不进技能包</b>：包只教怎么做对，
+      <li><b>事故簿</b>——单独存放「这条规则是哪次事故换来的」，<b>故意不进规则包</b>：包只教怎么做对，
         事故叙述只在「某条规则看着多余、想删掉」的时候回查。</li>
     </ul>
     <p>
       一个通用层自己的固有失败模式也记在这里：<b>通用层脚本要能住在仓库外</b>——
-      阶段推进器曾因为「从技能库目录解析不到依赖」而挂，这不是使用者的问题，是分层本身带来的。
+      阶段推进器曾因为「从规则库目录解析不到依赖」而挂，这不是使用者的问题，是分层本身带来的。
     </p>
   </div>
 
@@ -679,24 +684,24 @@
     <div class="hd">做什么</div>
     <div class="hd">判据在哪</div>
 
-    <div class="nm">dev-session.mjs</div>
+    <div class="nm">阶段推进器</div>
     <div>
-      阶段推进器，四个子命令 <b>up</b> / <b>run &lt;case&gt;</b> / <b>status</b> / <b>down</b>：
+      四类子命令：起会话 / 跑一条用例 / 报当前存活态 / 收尾。
       一条命令从起应用 → 等调试端口 → 连上 → 过登录 → 就绪，推到「可以写用例」。
-      每阶段向 stderr 打 <b>[dev-session] &lt;毫秒&gt; &lt;阶段名&gt;</b>，每步独立超时，
+      每阶段向 stderr 打一行带耗时的阶段名，每步独立超时，
       失败打印「✗ 卡在阶段 X」+ 原因 + 诊断命令。
     </div>
     <div class="refs"><a href="#r01">01</a><a href="#r04">04</a><a href="#r08">08</a></div>
 
-    <div class="nm">check_text_fit.py</div>
+    <div class="nm">版式几何门禁脚本</div>
     <div>
-      装箱 + 版式几何门禁，用<b>真实字体文件</b>度量，带 <b>--fix</b> 自动修复
+      装箱 + 版式几何门禁，用<b>真实字体文件</b>度量，带<b>自动修复</b>
       （优先加宽保住字号，加宽不够才降字号，下限为原字号 <b>70%</b> 且不低于 <b>9px</b>，
       同一行同类文字整组一起降，最多 <b>6 轮</b>）。换 DSL 只改读取层。
     </div>
     <div class="refs"><a href="#r09">09</a><a href="#r10">10</a><a href="#r11">11</a></div>
 
-    <div class="nm">test_layout_checks.py</div>
+    <div class="nm">门禁标定集</div>
     <div>
       上面那套判据的标定集：<b>13 例</b>全内联构造，只需标准库。
       真缺陷必须报出 / 已验收成品必须沉默 / 四类误报形态必须消除。
@@ -706,7 +711,7 @@
 
   <footer>
     张力允 · <a href="./index.html">项目集首页</a> · <a href="./ppt.html">PPT 成品展示</a> · <a href="https://github.com/zhangliyun2023">GitHub</a><br>
-    以上判据均来自实际工程与事故复盘，已做去标识化处理；不含任何私有源码、生产配置或内部链接。脚本可在面试时走读。
+    以上判据均来自实际工程实践；已隐去源码、生产配置与内部链接。脚本可在面试时走读。
   </footer>
 
 </div>
