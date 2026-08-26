@@ -119,6 +119,31 @@
     <code>Electron</code><code>TypeScript</code><code>Node</code><code>IPC</code>
     <code>pnpm monorepo</code><code>Vision 模型路由</code><code>OCR</code>
   </div>
+  <style>
+    .showcase{margin:16px 0 0}
+    .showcase a{
+      display:flex;align-items:center;gap:13px;text-decoration:none;color:inherit;
+      background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;
+      padding:13px 16px;transition:transform .22s cubic-bezier(.2,.7,.3,1),box-shadow .22s;
+    }
+    .showcase a:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(15,76,129,.55)}
+    .showcase-ic{
+      flex:0 0 auto;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+      background:var(--accent);color:var(--panel);font-size:11px;padding-left:2px;
+    }
+    .showcase-txt{font-size:13.5px;color:var(--muted);line-height:1.5}
+    .showcase-txt b{display:block;font-size:14.5px;color:var(--accent);font-weight:600}
+    .showcase-go{margin-left:auto;color:var(--accent);font-size:16px;transition:transform .22s}
+    .showcase a:hover .showcase-go{transform:translateX(3px)}
+    @media (max-width:520px){ .showcase-go{display:none} }
+  </style>
+  <p class="showcase">
+    <a href="./ppt.html">
+      <span class="showcase-ic" aria-hidden="true">▶</span>
+      <span class="showcase-txt"><b>看成品 · Agent 自动生成 PPT 展示</b>5 份样张 · 50 页 · 含「AI 生图 vs 联网搜图」同题对照</span>
+      <span class="showcase-go" aria-hidden="true">→</span>
+    </a>
+  </p>
   <p class="links private">口径：git blame 于 HEAD，2470 个手写源文件，已排除依赖锁文件、构建产物与 vendored 资源；其中测试代码 11.8 万行。源码位于公司私有 GitLab，不公开。</p>
 </article>
 

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MiraWork · PPT 生成能力展示 | 张力允</title>
+<meta name="description" content="MiraWork 桌面 Agent 自动生成 PPT 的成品展示：中国茶（AI 生图 / 联网搜图对照）、伏安法实验课件、长城人文专题、产品发布会视觉。">
+<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<style>
+  :root{
+    --bg:#fbfbfa; --panel:#fff; --line:#e6e4df; --ink:#1b1b19; --muted:#6b6862;
+    --accent:#0f4c81; --accent-soft:#eef3f8; --chip:#f2f1ee;
+    --shadow:0 1px 2px rgba(27,27,25,.04), 0 8px 24px -12px rgba(27,27,25,.18);
+    --shadow-lift:0 2px 6px rgba(27,27,25,.06), 0 22px 44px -18px rgba(27,27,25,.28);
+    --skeleton:#eeece7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#141413; --panel:#1c1c1a; --line:#302f2c; --ink:#eeece7; --muted:#9d9a93;
+           --accent:#7fb2e5; --accent-soft:#1d2733; --chip:#26251f;
+           --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+           --shadow-lift:0 2px 6px rgba(0,0,0,.5), 0 22px 44px -18px rgba(0,0,0,.85);
+           --skeleton:#26251f; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body.locked{overflow:hidden}
+  a{color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 96px}
+
+  /* ---------- header ---------- */
+  .back{
+    display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);
+    text-decoration:none;background:var(--chip);border:1px solid var(--line);
+    border-radius:999px;padding:4px 13px 4px 10px;transition:.18s;
+  }
+  .back:hover{color:var(--accent);border-color:var(--accent)}
+  .back svg{width:13px;height:13px}
+  header{margin:26px 0 40px}
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 10px;
+  }
+  h1{font-size:30px;letter-spacing:.01em;margin:0 0 10px;line-height:1.3}
+  .tagline{color:var(--muted);font-size:16px;margin:0 0 20px;max-width:64ch}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+  .meta span{
+    background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:4px 12px;color:var(--muted);
+  }
+  .meta span b{color:var(--ink);font-weight:600}
+  .note{
+    margin:26px 0 0;padding:12px 16px;border-left:3px solid var(--accent);
+    background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--muted);
+  }
+
+  h2.section{
+    font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin:52px 0 6px;padding-bottom:8px;border-bottom:1px solid var(--line);
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  }
+  h2.section .sub{letter-spacing:0;text-transform:none;font-weight:400;font-size:12.5px;opacity:.85}
+  .section-lede{color:var(--muted);font-size:13.5px;margin:12px 0 20px;max-width:76ch}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+  .card{
+    appearance:none;text-align:left;font:inherit;color:inherit;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:0;overflow:hidden;box-shadow:var(--shadow);
+    transition:transform .28s cubic-bezier(.2,.7,.3,1), box-shadow .28s, border-color .28s;
+    display:flex;flex-direction:column;
+  }
+  .card:hover,.card:focus-visible{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+  .card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .cover{position:relative;aspect-ratio:16/9;background:var(--skeleton);overflow:hidden}
+  .cover img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .5s cubic-bezier(.2,.7,.3,1), filter .3s;
+  }
+  .card:hover .cover img{transform:scale(1.045)}
+  @media (prefers-color-scheme: dark){ .cover img{filter:brightness(.9)} .card:hover .cover img{filter:brightness(1)} }
+  .cover::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to top,rgba(0,0,0,.55) 0%,rgba(0,0,0,.12) 34%,rgba(0,0,0,0) 60%);
+  }
+  .cover .pages{
+    position:absolute;left:12px;bottom:11px;z-index:2;color:#fff;font-size:12px;
+    letter-spacing:.04em;text-shadow:0 1px 3px rgba(0,0,0,.5);
+    display:flex;align-items:center;gap:5px;
+  }
+  .cover .pages svg{width:12px;height:12px;opacity:.85}
+  .cover .play{
+    position:absolute;right:12px;bottom:11px;z-index:2;
+    background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;
+    font-size:12px;padding:4px 11px;opacity:0;transform:translateY(4px);transition:.25s;
+  }
+  .card:hover .play,.card:focus-visible .play{opacity:1;transform:none}
+  .body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+  .head{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:7px}
+  .head .t{font-size:16.5px;font-weight:600;line-height:1.4}
+  .kind{
+    font-size:12px;color:var(--accent);background:var(--accent-soft);
+    border-radius:5px;padding:2px 8px;white-space:nowrap;
+  }
+  .cap{color:var(--muted);font-size:13.5px;margin:0 0 14px;flex:1}
+  .cap b{color:var(--ink);font-weight:600}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tags code{
+    background:var(--chip);border:1px solid var(--line);border-radius:5px;
+    padding:2px 8px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    color:var(--muted);
+  }
+
+  /* ---------- upcoming ---------- */
+  .soon{
+    margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;
+  }
+  .soon div{
+    border:1px dashed var(--line);border-radius:10px;padding:11px 14px;
+    color:var(--muted);font-size:13px;background:transparent;
+  }
+  .soon div span{display:block;font-size:11.5px;opacity:.7;margin-top:2px}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
+         font-size:13px;color:var(--muted)}
+  footer a{text-decoration:none;border-bottom:1px solid transparent}
+  footer a:hover{border-bottom-color:var(--accent)}
+
+  /* ================= viewer ================= */
+  .viewer{
+    position:fixed;inset:0;z-index:100;display:none;
+    background:rgba(16,16,15,.86);
+    backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+    color:#f4f2ee;
+    opacity:0;transition:opacity .28s ease;
+    flex-direction:column;
+  }
+  .viewer.open{display:flex}
+  .viewer.shown{opacity:1}
+  @media (prefers-color-scheme: light){ .viewer{background:rgba(20,20,19,.9)} }
+
+  .v-bar{
+    display:flex;align-items:center;gap:14px;padding:14px 20px;
+    border-bottom:1px solid rgba(255,255,255,.1);flex:0 0 auto;
+  }
+  .v-title{font-size:14px;font-weight:600;letter-spacing:.01em;min-width:0;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .v-kind{font-size:11.5px;padding:2px 8px;border-radius:5px;
+          background:rgba(255,255,255,.11);color:rgba(244,242,238,.8);white-space:nowrap}
+  .v-count{
+    margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;
+    color:rgba(244,242,238,.72);letter-spacing:.06em;white-space:nowrap;
+  }
+  .v-count b{color:#fff;font-weight:600;font-size:15px}
+  .v-close{
+    appearance:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+    color:#f4f2ee;width:32px;height:32px;border-radius:9px;cursor:pointer;
+    display:grid;place-items:center;transition:.18s;flex:0 0 auto;
+  }
+  .v-close:hover{background:rgba(255,255,255,.2)}
+  .v-close svg{width:15px;height:15px}
+  .v-progress{height:2px;background:rgba(255,255,255,.12);flex:0 0 auto}
+  .v-progress i{display:block;height:100%;background:#fff;width:0;
+                transition:width .34s cubic-bezier(.2,.7,.3,1);border-radius:0 2px 2px 0}
+
+  .v-stage{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:pan-y}
+  .v-track{display:flex;height:100%;will-change:transform;
+           transition:transform .42s cubic-bezier(.22,.72,.24,1)}
+  .v-track.dragging{transition:none}
+  .v-slide{
+    flex:0 0 100%;height:100%;display:grid;place-items:center;padding:26px 60px;
+  }
+  .v-slide img{
+    max-width:100%;max-height:100%;object-fit:contain;display:block;
+    border-radius:6px;box-shadow:0 24px 70px -20px rgba(0,0,0,.8);
+    opacity:0;transition:opacity .35s ease;background:rgba(255,255,255,.04);
+  }
+  .v-slide img.ready{opacity:1}
+
+  .v-nav{
+    position:absolute;top:0;bottom:0;width:56px;border:0;cursor:pointer;
+    background:transparent;color:#fff;display:grid;place-items:center;
+    transition:background .22s;
+  }
+  .v-nav:hover{background:linear-gradient(var(--dir),rgba(0,0,0,.3),transparent)}
+  .v-nav[disabled]{opacity:.22;cursor:default;background:transparent}
+  .v-prev{left:0;--dir:to right}
+  .v-next{right:0;--dir:to left}
+  .v-nav i{
+    width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:.2s;
+  }
+  .v-nav:hover i{background:rgba(255,255,255,.26);transform:scale(1.06)}
+  .v-nav svg{width:15px;height:15px}
+
+  .v-rail{
+    flex:0 0 auto;border-top:1px solid rgba(255,255,255,.1);
+    padding:10px 16px 12px;overflow-x:auto;overflow-y:hidden;
+    display:flex;gap:8px;scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,.25) transparent;
+  }
+  .v-rail::-webkit-scrollbar{height:6px}
+  .v-rail::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:3px}
+  .v-rail button{
+    flex:0 0 auto;appearance:none;padding:0;cursor:pointer;position:relative;
+    width:110px;aspect-ratio:16/9;border-radius:5px;overflow:hidden;
+    border:1.5px solid transparent;background:rgba(255,255,255,.07);
+    opacity:.5;transition:opacity .22s, border-color .22s, transform .22s;
+  }
+  .v-rail button img{width:100%;height:100%;object-fit:cover;display:block}
+  .v-rail button:hover{opacity:.85;transform:translateY(-2px)}
+  .v-rail button[aria-current="true"]{opacity:1;border-color:#fff}
+  .v-rail button::after{
+    content:attr(data-n);position:absolute;right:3px;bottom:2px;font-size:9.5px;
+    color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;
+  }
+
+  .v-hint{
+    position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
+    font-size:11.5px;color:rgba(244,242,238,.55);white-space:nowrap;
+    pointer-events:none;transition:opacity .5s;
+  }
+  .v-hint kbd{
+    font:inherit;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+    border-radius:4px;padding:1px 5px;margin:0 1px;
+  }
+
+  @media (max-width:640px){
+    .wrap{padding:32px 16px 72px}
+    h1{font-size:25px}
+    .grid{grid-template-columns:1fr;gap:16px}
+    .v-slide{padding:12px}
+    .v-nav{width:40px}
+    .v-nav i{width:32px;height:32px}
+    .v-rail button{width:82px}
+    .v-hint{display:none}
+    .v-bar{padding:11px 14px;gap:9px}
+    .v-kind{display:none}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <a class="back" href="./index.html#mirawork">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>
+    返回项目集
+  </a>
+
+  <header>
+    <p class="eyebrow">MiraWork · 办公场景能力样张</p>
+    <h1>Agent 自动生成 PPT · 成品展示</h1>
+    <p class="tagline">
+      以下每一份都由 MiraWork 桌面 Agent 从一句自然语言需求出发，
+      自主完成大纲拆解、内容撰写、素材获取（AI 生图 / 联网搜图）、版式排布与配色，
+      最终直接产出可编辑的 .pptx。此处呈现的是渲染后的原始页面，未做任何人工修图或重排。
+    </p>
+    <div class="meta">
+      <span><b id="statDecks">5</b> 份成品</span>
+      <span><b id="statPages">50</b> 页幻灯片</span>
+      <span>4 类主题场景</span>
+      <span>零人工修改</span>
+    </div>
+    <p class="note">
+      看点不在单页好看，而在<b>一致性</b>：同一份里字号层级、留白节奏、色板、页脚编号全程稳定；
+      换一个主题，整套视觉语言随之切换（人文专题 → 水墨留白，产品发布 → 深色高对比，课件 → 高可读浅底）。
+      点击任意封面进入沉浸式浏览，支持方向键翻页、缩略图跳转、触屏滑动，<kbd>Esc</kbd> 退出。
+    </p>
+  </header>
+
+  <h2 class="section">对照组 <span class="sub">同一主题，两种素材获取策略</span></h2>
+  <p class="section-lede">
+    同一个「中国茶」选题跑两遍，唯一变量是素材来源：一版全部走 AI 文生图，一版全部走联网检索真实图片并保留出处署名。
+    这组对照要说明的是 —— 素材通道是可插拔的策略，Agent 会据此调整整套视觉方案：
+    生图版敢用大面积暗调氛围与整屏出血，搜图版则退回浅色版式、给真实照片留出规整图框和版权标注位。
+  </p>
+  <div class="grid" id="gridCompare"></div>
+
+  <h2 class="section">专题作品 <span class="sub">不同场景下的版式与叙事能力</span></h2>
+  <p class="section-lede">
+    每份对应一类真实办公需求，检验的是 Agent 能否把「内容结构」翻译成「合适的视觉结构」，而不是往固定模板里灌字。
+  </p>
+  <div class="grid" id="gridWorks"></div>
+
+  <h2 class="section">更多主题 <span class="sub">已生成，暂未收录</span></h2>
+  <div class="soon">
+    <div>上市公司财报解读<span>金融 / 数据密集</span></div>
+    <div>比亚迪管理层简报<span>企业汇报</span></div>
+    <div>Transformer 论文答辩<span>学术 / 公式图示</span></div>
+    <div>小米融资案例复盘<span>商业分析</span></div>
+    <div>新能源汽车出口分析<span>图表 / 多维数据</span></div>
+    <div>出片流水线架构评审<span>技术评审</span></div>
+  </div>
+
+  <footer>
+    张力允 · <a href="./index.html">项目集首页</a> · <a href="https://github.com/zhangliyun2023">GitHub</a><br>
+    本页仅展示 MiraWork 生成的 PPT 样张，用于说明 Agent 的产出质量；不含任何产品源码、内部配置或客户数据。
+  </footer>
+
+</div>
+
+<!-- ================= 沉浸式浏览器 ================= -->
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="幻灯片浏览器" hidden>
+  <div class="v-bar">
+    <span class="v-title" id="vTitle"></span>
+    <span class="v-kind" id="vKind"></span>
+    <span class="v-count"><b id="vCur">1</b> / <span id="vTot">1</span></span>
+    <button class="v-close" id="vClose" aria-label="关闭浏览器 (Esc)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+    </button>
+  </div>
+  <div class="v-progress"><i id="vProg"></i></div>
+  <div class="v-stage" id="vStage">
+    <div class="v-track" id="vTrack"></div>
+    <button class="v-nav v-prev" id="vPrev" aria-label="上一页">
+      <i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></i>
+    </button>
+    <button class="v-nav v-next" id="vNext" aria-label="下一页">
+      <i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></i>
+    </button>
+    <div class="v-hint" id="vHint"><kbd>←</kbd><kbd>→</kbd> 翻页 · <kbd>Esc</kbd> 退出</div>
+  </div>
+  <div class="v-rail" id="vRail" role="tablist" aria-label="页面缩略图"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- 作品数据（新增作品只需往这里加一条） ---------- */
+  var DECKS = [
+    { slug:"tea-ai", group:"compare", pages:10,
+      title:"中国茶 · 一片树叶的故事",
+      kind:"AI 生图版",
+      cap:"人文长篇叙事。全篇视觉素材由 <b>AI 文生图</b>产出，因此可以放手用整屏出血图 + 暗调氛围，标题压在留白处，形成杂志式的连续气质。",
+      tags:["文生图","暗调视觉","整屏出血"] },
+    { slug:"tea-web", group:"compare", pages:10,
+      title:"中国茶 · 一片树叶的千年旅程",
+      kind:"联网搜图版",
+      cap:"同一选题的<b>联网检索</b>版本。素材换成真实照片后，Agent 自动改走浅色版式：规整图框、统一裁切比例，并在图注位保留来源与授权署名。",
+      tags:["联网检索","真实图片","来源署名"] },
+
+    { slug:"physics", group:"works", pages:12,
+      title:"伏安法测电阻 · 实验课件",
+      kind:"教学课件",
+      cap:"检验<b>教学结构</b>能力：原理 → 器材 → 电路连接 → 操作步骤 → 误差分析逐级推进，并自绘电路示意图，浅底高对比保证投影可读。",
+      tags:["教学结构","矢量图示","高可读版式"] },
+    { slug:"greatwall", group:"works", pages:8,
+      title:"长城 · 万里雄关",
+      kind:"人文专题",
+      cap:"检验<b>时间线与史料组织</b>：把两千余年营建史压成一条可读的横向时间轴，配色取自实景照片，金线与暗底呼应主题气质。",
+      tags:["时间轴","实景配色","专题叙事"] },
+    { slug:"headphone", group:"works", pages:10,
+      title:"虚拟耳机 · 新品发布",
+      kind:"产品发布",
+      cap:"检验<b>发布会视觉语言</b>：参数被拆成节奏化的大字组，产品渲染图整屏铺底，页脚统一编号与「概念渲染图」标注，接近真实 Keynote 观感。",
+      tags:["发布会视觉","大字排版","参数信息层级"] }
+  ];
+
+  var pad = function(n){ return n < 10 ? "0" + n : "" + n; };
+  var img = function(d, i){ return "ppt/" + d.slug + "/" + pad(i) + ".jpg"; };
+  var thumb = function(d, i){ return "ppt/" + d.slug + "/thumb/" + pad(i) + ".jpg"; };
+
+  /* ---------- 卡片渲染 ---------- */
+  var PAGE_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2.2" y="3" width="11.6" height="9" rx="1.4"/><path d="M2.2 9.6l3.2-2.6 2.6 2.1 2.3-1.9 3.5 2.8"/></svg>';
+
+  function cardHTML(d, idx){
+    return '<button class="card" type="button" data-deck="' + idx + '" ' +
+      'aria-label="打开《' + d.title + '》，共 ' + d.pages + ' 页">' +
+      '<span class="cover">' +
+        '<img src="' + thumb(d,1) + '" alt="《' + d.title + '》首页缩略图" loading="lazy" decoding="async" width="440" height="248">' +
+        '<span class="pages">' + PAGE_ICON + d.pages + ' 页</span>' +
+        '<span class="play">进入浏览 →</span>' +
+      '</span>' +
+      '<span class="body">' +
+        '<span class="head"><span class="t">' + d.title + '</span><span class="kind">' + d.kind + '</span></span>' +
+        '<span class="cap">' + d.cap + '</span>' +
+        '<span class="tags"><code>' + d.tags.join('</code><code>') + '</code></span>' +
+      '</span>' +
+    '</button>';
+  }
+
+  var gc = [], gw = [];
+  DECKS.forEach(function(d, i){
+    (d.group === "compare" ? gc : gw).push(cardHTML(d, i));
+  });
+  document.getElementById("gridCompare").innerHTML = gc.join("");
+  document.getElementById("gridWorks").innerHTML = gw.join("");
+
+  document.getElementById("statDecks").textContent = DECKS.length;
+  document.getElementById("statPages").textContent = DECKS.reduce(function(s,d){ return s + d.pages; }, 0);
+
+  /* ---------- 浏览器状态 ---------- */
+  var V   = document.getElementById("viewer"),
+      track = document.getElementById("vTrack"),
+      rail  = document.getElementById("vRail"),
+      stage = document.getElementById("vStage"),
+      elCur = document.getElementById("vCur"),
+      elTot = document.getElementById("vTot"),
+      elTit = document.getElementById("vTitle"),
+      elKind= document.getElementById("vKind"),
+      elProg= document.getElementById("vProg"),
+      btnPrev = document.getElementById("vPrev"),
+      btnNext = document.getElementById("vNext"),
+      hint  = document.getElementById("vHint");
+
+  var deck = null, idx = 0, slides = [], thumbs = [], lastFocus = null, hintTimer = null;
+
+  function build(d){
+    var s = [], t = [];
+    for (var i = 1; i <= d.pages; i++){
+      s.push('<div class="v-slide"><img alt="《' + d.title + '》第 ' + i + ' 页" decoding="async"></div>');
+      t.push('<button type="button" role="tab" data-i="' + (i-1) + '" data-n="' + pad(i) + '" ' +
+             'aria-label="跳到第 ' + i + ' 页"><img src="' + thumb(d,i) + '" alt="" loading="lazy" decoding="async"></button>');
+    }
+    track.innerHTML = s.join("");
+    rail.innerHTML  = t.join("");
+    slides = [].slice.call(track.children);
+    thumbs = [].slice.call(rail.children);
+  }
+
+  /* 只给当前页 ±2 范围内的幻灯片挂 src，避免一次拉 12 张大图 */
+  function hydrate(){
+    for (var i = 0; i < slides.length; i++){
+      var im = slides[i].firstChild;
+      if (Math.abs(i - idx) <= 2 && !im.getAttribute("src")){
+        (function(node){
+          node.addEventListener("load", function(){ node.classList.add("ready"); }, { once:true });
+        })(im);
+        im.setAttribute("src", img(deck, i + 1));
+        if (im.complete) im.classList.add("ready");
+      }
+    }
+  }
+
+  function paint(animate){
+    if (!animate) track.classList.add("dragging");
+    track.style.transform = "translate3d(" + (-idx * 100) + "%,0,0)";
+    if (!animate) { void track.offsetWidth; track.classList.remove("dragging"); }
+
+    elCur.textContent = pad(idx + 1);
+    elProg.style.width = (deck.pages < 2 ? 100 : (idx / (deck.pages - 1)) * 100) + "%";
+    btnPrev.disabled = idx === 0;
+    btnNext.disabled = idx === deck.pages - 1;
+
+    thumbs.forEach(function(b, i){
+      var on = i === idx;
+      b.setAttribute("aria-current", on ? "true" : "false");
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      if (on && rail.scrollWidth > rail.clientWidth){
+        var want = b.offsetLeft - (rail.clientWidth - b.offsetWidth) / 2;
+        rail.scrollTo({ left: Math.max(0, want), behavior: "smooth" });
+      }
+    });
+    hydrate();
+  }
+
+  function go(n, animate){
+    var next = Math.max(0, Math.min(deck.pages - 1, n));
+    if (next === idx && animate !== false) return;
+    idx = next;
+    paint(animate !== false);
+  }
+
+  function open(i, startAt){
+    deck = DECKS[i];
+    idx = startAt || 0;
+    lastFocus = document.activeElement;
+    build(deck);
+    elTit.textContent = "《" + deck.title + "》";
+    elKind.textContent = deck.kind;
+    elTot.textContent = pad(deck.pages);
+    V.hidden = false;
+    V.classList.add("open");
+    document.body.classList.add("locked");
+    paint(false);
+    requestAnimationFrame(function(){ V.classList.add("shown"); });
+    document.getElementById("vClose").focus();
+    hint.style.opacity = "1";
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function(){ hint.style.opacity = "0"; }, 4200);
+    if (history.replaceState) history.replaceState(null, "", "#" + deck.slug);
+  }
+
+  function close(){
+    V.classList.remove("shown");
+    document.body.classList.remove("locked");
+    setTimeout(function(){
+      V.classList.remove("open");
+      V.hidden = true;
+      track.innerHTML = ""; rail.innerHTML = "";
+      slides = []; thumbs = []; deck = null;
+    }, 280);
+    if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  /* ---------- 事件 ---------- */
+  document.addEventListener("click", function(e){
+    var c = e.target.closest ? e.target.closest(".card") : null;
+    if (c) { open(+c.dataset.deck); return; }
+    var t = e.target.closest ? e.target.closest(".v-rail button") : null;
+    if (t) { go(+t.dataset.i); }
+  });
+
+  btnPrev.addEventListener("click", function(){ go(idx - 1); });
+  btnNext.addEventListener("click", function(){ go(idx + 1); });
+  document.getElementById("vClose").addEventListener("click", close);
+
+  document.addEventListener("keydown", function(e){
+    if (!deck) return;
+    var k = e.key;
+    if (k === "Escape")        { e.preventDefault(); close(); }
+    else if (k === "ArrowRight" || k === "PageDown" || k === " ") { e.preventDefault(); go(idx + 1); }
+    else if (k === "ArrowLeft"  || k === "PageUp")                { e.preventDefault(); go(idx - 1); }
+    else if (k === "Home")     { e.preventDefault(); go(0); }
+    else if (k === "End")      { e.preventDefault(); go(deck.pages - 1); }
+  });
+
+  /* 触摸滑动 */
+  var tx = 0, ty = 0, dx = 0, drag = false, axis = "";
+  stage.addEventListener("touchstart", function(e){
+    if (!deck || e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+    dx = 0; drag = true; axis = "";
+    track.classList.add("dragging");
+  }, { passive:true });
+
+  stage.addEventListener("touchmove", function(e){
+    if (!drag) return;
+    var mx = e.touches[0].clientX - tx, my = e.touches[0].clientY - ty;
+    if (!axis) axis = Math.abs(mx) > Math.abs(my) ? "x" : "y";
+    if (axis !== "x") return;
+    dx = mx;
+    /* 首尾添加阻尼 */
+    if ((idx === 0 && dx > 0) || (idx === deck.pages - 1 && dx < 0)) dx *= .32;
+    track.style.transform = "translate3d(calc(" + (-idx * 100) + "% + " + dx + "px),0,0)";
+  }, { passive:true });
+
+  stage.addEventListener("touchend", function(){
+    if (!drag) return;
+    drag = false;
+    track.classList.remove("dragging");
+    var w = stage.clientWidth || 1;
+    var step = (Math.abs(dx) > Math.min(72, w * .16)) ? (dx < 0 ? 1 : -1) : 0;
+    go(idx + step, true);
+    if (step === 0) paint(true);
+    dx = 0;
+  });
+
+  /* 深链：ppt.html#tea-ai 直接打开对应作品 */
+  var hash = (location.hash || "").slice(1);
+  if (hash){
+    for (var i = 0; i < DECKS.length; i++){
+      if (DECKS[i].slug === hash){ open(i); break; }
+    }
+  }
+})();
+</script>
+</body>
+</html>
