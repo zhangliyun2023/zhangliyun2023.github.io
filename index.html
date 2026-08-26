@@ -112,7 +112,7 @@
     <li><b>运行时集成</b>：Electron 主进程嵌入 coding agent，经 IPC 推送流式 message 与 tool_execution；多工作区 / 多 session，带图 prompt 自动切 Vision 模型。</li>
     <li><b>人审闭环</b>：每轮 prompt 前对工作区做快照，结束后生成 diff 持久化为 Changeset，支持 accept / reject / revert 后再落盘 —— Agent 改码不再是黑箱。</li>
     <li><b>文档管线</b>：自建 document extract/search（PDF/Office、OCR、内容哈希缓存），分级抽取避免大文件拖垮主链路。</li>
-    <li><b>运行时语种治理</b>：修复 DeepSeek V4 中文场景下思考链混入英文 —— 按用户语种锁定 thinking/reasoning 与工具回调后的状态一致性。</li>
+    <li><b>状态一致性</b>：工作区文件以磁盘为最终裁决建立 liveness 统一真相源，外部删除或热更新后，文件树、预览与交付物列表不再与实际脱节。</li>
     <li><b>工程面</b>：monorepo 含 CLI、LLM Gateway、技能市场与门禁化、Mac/Win 打包发版；跨会话状态隔离与工作区文件 liveness 统一真相源。</li>
   </ul>
   <div class="stack">
