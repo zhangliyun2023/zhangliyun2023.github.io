@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>张力允 · 项目集 | AI Agent 工程</title>
+<meta name="description" content="张力允的项目集：MiraWork 桌面 Agent、Agent Studio 多智能体编排、AI 实证研究工作台、AutoPaper 论文流水线。">
+<style>
+  :root{
+    --bg:#fbfbfa; --panel:#fff; --line:#e6e4df; --ink:#1b1b19; --muted:#6b6862;
+    --accent:#0f4c81; --accent-soft:#eef3f8; --chip:#f2f1ee;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#141413; --panel:#1c1c1a; --line:#302f2c; --ink:#eeece7; --muted:#9d9a93;
+           --accent:#7fb2e5; --accent-soft:#1d2733; --chip:#26251f; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:56px 24px 96px}
+  header{margin-bottom:44px}
+  h1{font-size:30px;letter-spacing:.01em;margin:0 0 8px}
+  .tagline{color:var(--muted);font-size:16px;margin:0 0 18px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+  .meta span,.meta a{
+    background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:4px 12px;color:var(--muted);text-decoration:none;
+  }
+  .meta a:hover{color:var(--accent);border-color:var(--accent)}
+  .note{
+    margin:28px 0 0;padding:12px 16px;border-left:3px solid var(--accent);
+    background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--muted);
+  }
+  h2.section{
+    font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin:48px 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line);
+  }
+  article{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:22px 24px;margin-bottom:18px;
+  }
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:4px}
+  .head h3{font-size:18px;margin:0}
+  .role{font-size:13px;color:var(--accent);background:var(--accent-soft);
+        border-radius:5px;padding:2px 8px}
+  .when{font-size:13px;color:var(--muted);margin-left:auto}
+  .lede{color:var(--muted);margin:8px 0 14px}
+  ul{margin:0 0 14px;padding-left:18px}
+  li{margin-bottom:7px}
+  li b{font-weight:600}
+  .stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .stack code{
+    background:var(--chip);border:1px solid var(--line);border-radius:5px;
+    padding:2px 8px;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    color:var(--muted);
+  }
+  .metrics{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:9px;overflow:hidden;margin:14px 0;
+  }
+  .metrics div{background:var(--panel);padding:12px 14px}
+  .metrics b{display:block;font-size:19px;color:var(--accent);font-weight:600;line-height:1.3}
+  .metrics span{font-size:12px;color:var(--muted)}
+  .links{margin-top:14px;font-size:13.5px}
+  .links a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+  .links a:hover{border-bottom-color:var(--accent)}
+  .links .private{color:var(--muted)}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);
+         font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>张力允</h1>
+  <p class="tagline">AI Agent 工程 · 桌面与平台侧全栈 · 上海</p>
+  <div class="meta">
+    <span>上海大学 · 管理科学与工程 硕士 · 2023–2026</span>
+    <a href="https://github.com/zhangliyun2023">GitHub</a>
+  </div>
+  <p class="note">
+    本页是项目说明页，用于替代此前托管在临时域名上的 Demo 链接。
+    多数项目源码位于私有仓库（含生产配置与用户数据），此处只公开架构、职责与可量化结果；
+    需要演示或代码走读可在面试时提供。
+  </p>
+</header>
+
+<h2 class="section">在职项目</h2>
+
+<article>
+  <div class="head">
+    <h3>MiraWork · 编程 + 办公双场景桌面 Agent</h3>
+    <span class="role">独立 0→1 / 持续主导</span>
+    <span class="when">2026.05 – 至今</span>
+  </div>
+  <p class="lede">
+    上海语生科学技术。用户在同一个本地工作区里：读 PDF/Word/Excel/PPT → 分析数据 →
+    写代码并运行 → 产出 Word / PPT / 图表。编程侧改动经 Changeset 人审后才落盘。
+  </p>
+  <div class="metrics">
+    <div><b>1,464</b><span>个人提交数</span></div>
+    <div><b>37%</b><span>占 monorepo 总提交</span></div>
+    <div><b>2 周</b><span>入职到首版内测</span></div>
+    <div><b>40+</b><span>内部深度用户</span></div>
+  </div>
+  <ul>
+    <li><b>运行时集成</b>：Electron 主进程嵌入 coding agent，经 IPC 推送流式 message 与 tool_execution；多工作区 / 多 session，带图 prompt 自动切 Vision 模型。</li>
+    <li><b>人审闭环</b>：每轮 prompt 前对工作区做快照，结束后生成 diff 持久化为 Changeset，支持 accept / reject / revert 后再落盘 —— Agent 改码不再是黑箱。</li>
+    <li><b>文档管线</b>：自建 document extract/search（PDF/Office、OCR、内容哈希缓存），分级抽取避免大文件拖垮主链路。</li>
+    <li><b>运行时语种治理</b>：修复 DeepSeek V4 中文场景下思考链混入英文 —— 按用户语种锁定 thinking/reasoning 与工具回调后的状态一致性。</li>
+    <li><b>工程面</b>：monorepo 含 CLI、LLM Gateway、技能市场与门禁化、Mac/Win 打包发版；跨会话状态隔离与工作区文件 liveness 统一真相源。</li>
+  </ul>
+  <div class="stack">
+    <code>Electron</code><code>TypeScript</code><code>Node</code><code>IPC</code>
+    <code>pnpm monorepo</code><code>Vision 模型路由</code><code>OCR</code>
+  </div>
+  <p class="links private">源码位于公司私有 GitLab，不公开。</p>
+</article>
+
+<h2 class="section">独立项目</h2>
+
+<article>
+  <div class="head">
+    <h3>Agent Studio · 多智能体编排与自愈运行时</h3>
+    <span class="role">全栈 · 独立开发</span>
+    <span class="when">2026.03 – 至今</span>
+  </div>
+  <p class="lede">
+    把「自然语言 → 可运行原型」做成<b>可观测</b>的 Agent 工程平台。
+    用可玩原型作为验证载体，而不是单纯的游戏 Demo —— 无需先操作试玩，
+    从首屏就能看到 Agent 如何规划、调用工具、失败自愈和复盘。
+  </p>
+  <ul>
+    <li><b>编排</b>：8 个异构 Agent（Designer / Coder / Validator / Visual Inspector / Reflector 等）按阶段编排；Tool Registry 统一文件、Python、浏览器、Web 检索等工具调用。</li>
+    <li><b>可观测</b>：前端实时展示 SSE 事件流、打分卡、质量走势与策略切换。</li>
+    <li><b>自愈运行时</b>：无头 Chromium 真实渲染 + Vision 质检；失败后进入 Patch / Recode 双模干预，支持最佳版本回退与自动修复。</li>
+    <li><b>可续跑</b>：自研 Intent 级多模型路由、退避降级、checkpoint 断点续跑。</li>
+    <li><b>分层记忆</b>：Rules / Mistakes / Templates 三层，让失败经验可复用而不是每次从头试。</li>
+  </ul>
+  <div class="stack">
+    <code>多 Agent 编排</code><code>Tool Registry</code><code>SSE</code>
+    <code>Headless Chromium</code><code>Vision 质检</code><code>Checkpoint</code><code>多模型路由</code>
+  </div>
+</article>
+
+<article>
+  <div class="head">
+    <h3>AI 实证研究工作台</h3>
+    <span class="role">全栈 · 独立负责</span>
+    <span class="when">2025.12 – 至今</span>
+  </div>
+  <p class="lede">
+    面向社科、管理、医学、经济领域研究者的在线实证研究平台：
+    数据上传 → 预处理 → 变量与构念配置 → 统计分析 → Word 报告导出，全流程 Web 化。
+  </p>
+  <div class="metrics">
+    <div><b>18 种</b><span>统计分析方法</span></div>
+    <div><b>700+</b><span>量表知识库</span></div>
+    <div><b>100+</b><span>理论条目</span></div>
+    <div><b>50+ / 20+</b><span>注册 / 付费用户</span></div>
+  </div>
+  <ul>
+    <li><b>方法矩阵</b>：SEM、ANOVA、Logistic、HLM、Meta、DID、PSM、面板、生存分析、时间序列、fsQCA 等；前端注册表 + 统一 <code>POST /api/projects/[id]/&lt;track&gt;/run</code> 模式，加第 19 种方法只需加 Python 模块 + 路由 + 注册项。</li>
+    <li><b>前后端分离式计算</b>：Next.js API 负责鉴权、业务与持久化；Python FastAPI 承载重计算（pandas / statsmodels / semopy / scikit-learn），返回结构化 tables / charts / interpretation。</li>
+    <li><b>RAG 知识层</b>：聚合 700+ 量表与 100+ 理论，支撑构念识别与方法推荐；6 种研究场景自动匹配方法组合。</li>
+    <li><b>任务系统</b>：多机 Worker（A/B/C）最小负载优先调度，单机并发上限 3，队列满则拒绝而非堆积。</li>
+    <li><b>计费闭环</b>：预估 → 预扣 → 结算 → 释放全生命周期，含支付对接。</li>
+    <li><b>灰度</b>：Feature Flag 控制分析方法可见性，渐进开放。</li>
+  </ul>
+  <div class="stack">
+    <code>Next.js 14</code><code>TypeScript</code><code>Prisma</code><code>PostgreSQL</code>
+    <code>FastAPI</code><code>statsmodels</code><code>semopy</code><code>S3</code><code>RAG</code>
+  </div>
+  <p class="links private">源码私有（含生产配置与用户数据）。</p>
+</article>
+
+<article>
+  <div class="head">
+    <h3>AutoPaper · 论文自动化流水线</h3>
+    <span class="role">全栈 · 独立负责</span>
+    <span class="when">2026.01 – 至今</span>
+  </div>
+  <p class="lede">
+    实证工作台的姊妹系统：把统计结果交给 Worker 集群，
+    经审批与多机调度后自动生成带真实引用的学术论文 Word。
+    核心问题是<b>长任务「一处失败整链重跑」</b>。
+  </p>
+  <ul>
+    <li><b>逆序写作 + 多阶段 Pipeline</b>：统计 → 分析 → 引用补搜 → 写作 → 校验，优先锁定数据与结论链，降低长文返工成本。</li>
+    <li><b>步骤级检查点</b>：任一步失败可从最近 checkpoint 恢复，避免全流程重跑；run 归档便于对比与审计。</li>
+    <li><b>多 Provider 统一封装</b>：DeepSeek / Gemini / OpenAI 等，流式与错误码差异收敛在适配层；主链路异常时 fallback + 指数退避重试。</li>
+    <li><b>检索子 Agent</b>：Playwright 驱动 Elicit / Google Scholar 检索与引用解析，输出 APA / GB-T 等格式。</li>
+    <li><b>基线优先门</b>：新功能合并前跑 smoke，等价 CI 门控，防止长 Pipeline 回归。</li>
+    <li><b>交付</b>：三档质量策略（fast / standard / high），Webhook 回写 step/log 状态，产物进 S3，下载走票据化 API。</li>
+  </ul>
+  <div class="metrics">
+    <div><b>50+</b><span>服务用户</span></div>
+    <div><b>MSCE 2026</b><span>产出论文录用</span></div>
+  </div>
+  <div class="stack">
+    <code>Python Pipeline</code><code>Playwright</code><code>Webhook</code>
+    <code>Checkpoint</code><code>多 Provider Fallback</code><code>Smoke/CI 门禁</code>
+  </div>
+  <p class="links private">源码私有。</p>
+</article>
+
+<h2 class="section">研究与其他</h2>
+
+<article>
+  <div class="head">
+    <h3>研究想法评估平台 · Pairwise 排序与 Generator–Judge</h3>
+    <span class="role">清华经管 · 算法与产品化</span>
+    <span class="when">2024.09 – 2026.01</span>
+  </div>
+  <ul>
+    <li><b>Pairwise Comparison</b>：针对大模型评估科研 Idea 时「两端准（95%）、中间混淆（50%）」的痛点，把绝对打分改成两两博弈排序，把模糊分类转成高置信度排序问题。</li>
+    <li><b>Generator–Judge 解耦</b>：Generator 生成详细评审理由（Chain of Thought），Judge 读理由做最终裁决，缓解单模型长逻辑推理的注意力发散。</li>
+    <li><b>Benchmarking</b>：构建 Idea 评估数据集，横向对比 GPT-4.1、Kimi 等基座与微调策略。</li>
+    <li>参与 <i>Nature Computational Science</i> 论文三轮返修的数据与代码管线工作。</li>
+  </ul>
+  <p class="links"><a href="https://gatekeeper.spansurvey.net">gatekeeper.spansurvey.net</a> · 平台已上线</p>
+</article>
+
+<article>
+  <div class="head">
+    <h3>管理学顶刊文献 RAG + QLoRA 本地部署</h3>
+    <span class="role">独立开发</span>
+    <span class="when">2025.11 – 2025.12</span>
+  </div>
+  <ul>
+    <li>文档清洗 docx→Markdown，切块入 Chroma 四分库（16 篇 AMJ 文献、346+ chunk）+ bge-small-zh；检索与生成拆层验收。</li>
+    <li>Qwen3.5-9B QLoRA（186 条 Alpaca 样本，3 epoch / 72 step，train_loss ≈ 1.395，约 7.5h）合并导出 GGUF；Ollama F16 / Q8 多别名共用权重、SYSTEM prompt 分流。</li>
+    <li>脚本化评测：检索评测 + 2×2 生成消融，把「有没有变好」从主观感受改成可复跑脚本。</li>
+    <li>GGUF 与 Ollama 运行环境可封装至 U 盘，离线即插即用。</li>
+  </ul>
+  <div class="stack">
+    <code>Chroma</code><code>bge-small-zh</code><code>QLoRA</code><code>GGUF</code><code>Ollama</code>
+  </div>
+</article>
+
+<footer>
+  张力允 · 上海 · 期望方向：AI Agent 工程 / LLM 平台与应用全栈<br>
+  联系方式见简历。本页不含任何私有源码或生产配置。
+</footer>
+
+</div>
+</body>
+</html>
