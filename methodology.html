@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可沉淀的方法论 · 13 条判据 | 张力允</title>
+<meta name="description" content="从一个桌面 Agent 产品与一条文档自动生成链路上提炼的 13 条工程判据：沉默失效、作用域、可复算门禁、全量复验。每条含规则、事故出处与可执行的验证方式。">
+<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<style>
+  :root{
+    --bg:#fbfbfa; --panel:#fff; --line:#e6e4df; --ink:#1b1b19; --muted:#6b6862;
+    --accent:#0f4c81; --accent-soft:#eef3f8; --chip:#f2f1ee;
+    --shadow:0 1px 2px rgba(27,27,25,.04), 0 8px 24px -12px rgba(27,27,25,.18);
+    --shadow-lift:0 2px 6px rgba(27,27,25,.06), 0 22px 44px -18px rgba(27,27,25,.28);
+    --max-width:860px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#141413; --panel:#1c1c1a; --line:#302f2c; --ink:#eeece7; --muted:#9d9a93;
+           --accent:#7fb2e5; --accent-soft:#1d2733; --chip:#26251f;
+           --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+           --shadow-lift:0 2px 6px rgba(0,0,0,.5), 0 22px 44px -18px rgba(0,0,0,.85); }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent)}
+  .wrap{max-width:var(--max-width);margin:0 auto;padding:40px 24px 96px}
+
+  /* ---------- header ---------- */
+  .back{
+    display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);
+    text-decoration:none;background:var(--chip);border:1px solid var(--line);
+    border-radius:999px;padding:4px 13px 4px 10px;transition:.18s;
+  }
+  .back:hover{color:var(--accent);border-color:var(--accent)}
+  .back svg{width:13px;height:13px}
+  header{margin:26px 0 40px}
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 10px;
+  }
+  h1{font-size:30px;letter-spacing:.01em;margin:0 0 12px;line-height:1.3}
+  .tagline{color:var(--muted);font-size:15.5px;margin:0;max-width:68ch}
+  .tagline b{color:var(--ink);font-weight:600}
+  .note{
+    margin:26px 0 0;padding:12px 16px;border-left:3px solid var(--accent);
+    background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--muted);
+  }
+  .note b{color:var(--ink);font-weight:600}
+
+  /* ---------- 组标题 ---------- */
+  h2.section{
+    font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin:52px 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line);
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;scroll-margin-top:16px;
+  }
+  h2.section .range{
+    font-family:var(--mono);color:var(--accent);letter-spacing:.02em;
+    font-variant-numeric:tabular-nums;font-size:12.5px;
+  }
+  h2.section .sub{letter-spacing:0;text-transform:none;font-weight:400;font-size:12.5px;opacity:.85}
+
+  /* ---------- §0 导览 ---------- */
+  .toc{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:9px;overflow:hidden;margin:28px 0 0;
+  }
+  .toc a{
+    background:var(--panel);padding:13px 15px;text-decoration:none;color:inherit;
+    display:block;transition:background .2s;
+  }
+  .toc a:hover{background:var(--accent-soft)}
+  .toc i{
+    display:block;font-style:normal;font-family:var(--mono);font-size:12px;
+    color:var(--accent);font-variant-numeric:tabular-nums;margin-bottom:4px;
+  }
+  .toc b{display:block;font-size:14px;font-weight:600;color:var(--ink);line-height:1.4}
+  .toc span{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+
+  /* ---------- 规则卡 ---------- */
+  .rule{
+    position:relative;scroll-margin-top:16px;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:20px 24px 20px 24px;margin-bottom:16px;box-shadow:var(--shadow);
+    transition:transform .28s cubic-bezier(.2,.7,.3,1), box-shadow .28s, border-color .28s;
+  }
+  .rule:hover{
+    transform:translateY(-2px);box-shadow:var(--shadow-lift);
+    border-color:color-mix(in srgb,var(--accent) 40%,var(--line));
+  }
+  .r-top{position:relative}
+  .r-top::before{
+    content:"";position:absolute;left:-24px;top:-20px;bottom:0;width:3px;
+    background:var(--accent);border-radius:12px 0 0 0;
+  }
+  .r-top,.r-why,.r-check{display:grid;grid-template-columns:52px 1fr;column-gap:16px}
+  .lbl{
+    font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);line-height:1.7;padding-top:4px;
+  }
+  .lbl.is-rule{color:var(--accent)}
+  .r-num{
+    font-family:var(--mono);font-size:16px;color:var(--accent);
+    font-variant-numeric:tabular-nums;line-height:1.4;
+  }
+  .r-title{font-size:17px;font-weight:600;color:var(--ink);line-height:1.4;margin:0 0 12px}
+  .r-rule{font-size:15px;color:var(--ink);line-height:1.7;margin:0 0 4px}
+  .r-rule b{font-weight:600;color:var(--accent)}
+  .r-rule em{font-style:normal;font-weight:600;color:var(--ink)}
+  .r-rule ul{margin:8px 0 0;padding-left:18px}
+  .r-rule li{margin-bottom:5px}
+  .r-why{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .r-why p{font-size:13.5px;color:var(--muted);line-height:1.75;margin:0}
+  .r-why b{font-weight:600;color:var(--ink)}
+  .r-check{margin-top:14px}
+  .check-box{
+    background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:12px;
+    font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--muted);
+    overflow-x:auto;
+  }
+  .check-box::before{
+    content:"$";color:var(--accent);font-size:12px;font-weight:600;margin-right:8px;
+  }
+  .check-box code{color:var(--ink);font-family:inherit;white-space:nowrap}
+  .check-box b{color:var(--ink);font-weight:600;font-family:inherit}
+
+  /* ---------- §5 收尾 ---------- */
+  .wrapup{
+    margin:22px 0 0;padding:16px 18px;border-left:3px solid var(--accent);
+    background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:14px;color:var(--muted);
+    line-height:1.75;
+  }
+  .wrapup p{margin:0 0 10px}
+  .wrapup p:last-child{margin-bottom:0}
+  .wrapup ul{margin:10px 0;padding-left:18px}
+  .wrapup li{margin-bottom:8px}
+  .wrapup b{color:var(--ink);font-weight:600}
+  .wrapup code{font-family:var(--mono);font-size:12.5px;color:var(--accent)}
+
+  .scripts{
+    display:grid;grid-template-columns:190px 1fr 130px;
+    gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:9px;overflow:hidden;margin:20px 0 0;
+  }
+  .scripts>div{background:var(--panel);padding:13px 15px;font-size:13px;color:var(--muted)}
+  .scripts .hd{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+  .scripts .nm{font-family:var(--mono);font-size:12.5px;color:var(--accent);word-break:break-all}
+  .scripts b{color:var(--ink);font-weight:600}
+  .scripts .refs{display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start}
+  .scripts .refs a{
+    font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;
+    background:var(--chip);border:1px solid var(--line);border-radius:5px;
+    padding:1px 7px;text-decoration:none;color:var(--muted);transition:.18s;
+  }
+  .scripts .refs a:hover{color:var(--accent);border-color:var(--accent)}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
+         font-size:13px;color:var(--muted);line-height:1.7}
+  footer a{text-decoration:none;border-bottom:1px solid transparent}
+  footer a:hover{border-bottom-color:var(--accent)}
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width:720px){
+    .wrap{padding:32px 16px 72px}
+    h1{font-size:25px}
+    .rule{padding:18px 16px}
+    .r-top::before{left:-16px;top:-18px}
+    .r-top,.r-why,.r-check{display:block}
+    .r-top .r-num{
+      display:inline-block;margin-right:8px;vertical-align:baseline;font-size:15px;
+    }
+    .r-title{display:inline;font-size:16.5px}
+    .r-titlewrap{margin-bottom:12px}
+    .lbl{
+      display:inline-block;padding:1px 7px;margin-bottom:6px;line-height:1.6;
+      background:var(--chip);border:1px solid var(--line);border-radius:4px;
+    }
+    .check-box{font-size:12px}
+    .scripts{grid-template-columns:1fr}
+    .scripts .hd{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="./index.html#mirawork">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>
+    返回项目集
+  </a>
+
+  <header>
+    <p class="eyebrow">Transferable Practice</p>
+    <h1>可沉淀的方法论</h1>
+    <p class="tagline">
+      在一个桌面 Agent 产品和一条文档自动生成链路上做了一年多的实现与验收，
+      真正能带走的不是代码，是一批可以照抄到别的项目的判据。
+      下面每一条都写成三层：<b>规则</b>（能直接执行）、<b>为什么</b>（哪次事故换来的）、<b>怎么验</b>（一条能跑的命令或一个能失败的断言）。
+    </p>
+    <p class="note">
+      内容来自内部工程规范与事故复盘的<b>去标识化提炼</b>：不含公司名、内部项目名、内部链接与任何生产配置；
+      涉及的产品一律表述为「某桌面 Agent 产品」「某文档生成链路」。文中所有数字均为实测记录值，未做外推。
+    </p>
+  </header>
+
+  <!-- ============ §0 导览 ============ -->
+  <h2 class="section" id="guide">
+    <span class="range">00</span> 一句话导览
+    <span class="sub">共 4 组 13 条 · 点击跳到对应分组</span>
+  </h2>
+  <p class="tagline" style="font-size:13.5px;max-width:76ch">
+    第 1 组放最前，因为它们全部属于「<b>你按常识做，会得到一个绿色的结果，而这个结果是假的</b>」——
+    这类规则最能体现判断力，因为它不是知识，是踩过之后才知道要去怀疑什么。
+    后面三组依次是：作用域（错了会伤别人）、阈值（错了会出错误产物）、批量（错了会误判整轮结论）。
+  </p>
+  <nav class="toc">
+    <a href="#g1"><i>01 — 05</i><b>沉默失效</b><span>绿的不代表对的</span></a>
+    <a href="#g2"><i>06 — 08</i><b>作用域</b><span>默认作用域总是比你以为的大</span></a>
+    <a href="#g3"><i>09 — 11</i><b>门禁</b><span>可复算的阈值，而不是「注意排版」</span></a>
+    <a href="#g4"><i>12 — 13</i><b>全绿之后</b><span>三者齐备之后剩下的那部分</span></a>
+  </nav>
+
+  <!-- ============ §1 ============ -->
+  <h2 class="section" id="g1">
+    <span class="range">01 — 05</span> 沉默失效：绿的不代表对的
+    <span class="sub">这五条的共同形态是——你会得到一个绿色的结果，而它什么都没证明</span>
+  </h2>
+
+  <section class="rule" id="r01">
+    <div class="r-top">
+      <div class="r-num">01</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">撤回修复不转红，就不算验过</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        「验过了」必须同时满足两条：修复后绿，<b>且证据是用户看得见的东西</b>（DOM 文案 / <b>aria-*</b> / <b>data-*</b>，不是内部状态）；
+        把修复撤回后必须红，且<em>红的内容与用户症状同形</em>——用户说「显示了两张」，红的就该是 <b>length 1 but got 2</b>。
+        只满足第一条只能叫「我改完了」。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        绿只证明当前世界是好的，不证明这条用例押在了缺陷上。一条在「没有修复的世界」里也绿的测试，<b>等于没有测到东西</b>。
+        反过来，一个修复有多处改动时，只撤其中一处却没转红，说明撤错了地方，不是探针有效。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        <code>git checkout HEAD -- &lt;显式路径&gt;</code> 撤回 → <b>主进程改动必须重启实例</b>（只有渲染层能靠 HMR，不重启就退代码，探针读到的仍是修复版）→ 重跑同一条用例。
+        撤回前后各跑一次 <code>git diff --stat</code>，确认只有自己那几行在动。绝不用 <code>git stash</code>，也不用「整份 cp 快照再还原」。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r02">
+    <div class="r-top">
+      <div class="r-num">02</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">断言必须跨过至少一条进程或持久化边界</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        同一个事实要在三处同时读：<em>界面</em>（真实 DOM 文案与 <b>aria-*</b> / <b>data-*</b>）+ <em>IPC</em>（在页面里真调一次 <b>window.&lt;api&gt;.&lt;域&gt;.&lt;方法&gt;()</b>）
+        + <em>磁盘</em>（node 侧独立 <b>existsSync</b> / <b>readFileSync</b>，与渲染层状态完全无关）。三处不一致就是缺陷，<b>不取多数</b>。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        乐观更新会让只看界面的断言全线假绿：界面已经变了，数据根本没落盘。
+        而且同一个事实（存在性、内容版本）一旦在多处各自维护，就会长出「<b>同一个文件四个地方四种状态</b>」，对用户表现为「删不掉 / 不刷新 / 凭空消失」。
+        这三层结构不是某个框架特有的——本地状态 / 进程边界 / 持久化，桌面端、移动端、带缓存的 Web、CLI+DB 都是同一个洞。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        跨层定位不要逐层推断：一次把「数据层算出的值 / 传给渲染层的值 / 界面真实显示的值 / 相关状态位」<b>四个并排打出来</b>，
+        定位完立刻删埋点并在提交前 <code>grep</code> 自查。另外，<code>fs.watch({recursive:true})</code> 会丢事件、合事件、rename 只给一个名字，
+        <b>它是加速器，stat 探针才是裁决</b>。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r03">
+    <div class="r-top">
+      <div class="r-num">03</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">探测到 ≠ 用上了</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        凡是「有主实现 + 备用实现」的链路（渲染器、编解码器、字体、driver、模型 provider），
+        必须断言<em>实际用于渲染 / 执行的是谁</em>，并把这个实际值写进产物元数据。
+        只看退出码不够；产物的<b>数量与命名</b>同样要逐一断言。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        典型失效：渲染器按输入文件名命名输出（喂 <b>p3-bare.pptx</b> 出 <b>p3-bare.png</b>），代码去找 <b>p3.png</b>，
+        于是每一页都「成功但找不到文件」，整本静默降级到只能画 <b>50/177</b> 个形状、画不出原生图表的备用渲染器——<b>日志一切正常，退出码 0</b>。
+        而降级发生在所有检查之前，所以后面每一层视觉与功能检查都跑在残缺产物上，<b>全部白跑</b>。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        三件事都要断言：<b>渲染器身份</b>、<b>产物数量</b>、<b>产物文件名</b>。
+        另外，<b>注入了替身的单测证明不了接线</b>——凡新增「一个要被调用的东西」，除单测外必须再加一条接线断言（<code>grep</code> 产品入口确认被引用，或真机走一次那条路）。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r04">
+    <div class="r-top">
+      <div class="r-num">04</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">端口应答不等于活着</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        探活判据必须是「<em>能列出可用资源</em>」而不是「端口通」。三种存活状态分开处理：
+        没起来（连不上，起一个）／孤儿空壳（端口应答但目标列表返回 <b>0</b> 个 target，清掉重起）／半死（接受 TCP 但永不回响应，清掉重起）。
+        <b>每个探活请求必须自带超时</b>（<b>AbortSignal.timeout</b>，脚本内默认 <b>2000ms</b>）。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        不设超时的 fetch 撞上「半死」实例会永远挂着，外部表现是「<b>卡住且没有任何输出</b>」——最难查的一类，因为它连错误都不产生。
+        同一条判据对 DB、HTTP 依赖、容器健康检查一样成立。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        <code>dev-session.mjs status</code> 直接报出当前处于哪一态。配套两条硬约束：detached 子进程的 stdio <b>必须是 fd 不能是 pipe</b>
+        （<code>openSync</code> + <code>["ignore", fd, fd]</code> + <code>unref</code> + <code>closeSync</code>）——否则父进程一退出读端就关，
+        仍在跑的主进程下一次 <code>console.log</code> 直接 EPIPE 未捕获崩溃，表现成「一直登不上」加一地孤儿进程；
+        要看输出用 <code>readFileSync</code> 取日志尾巴，别 <code>on("data")</code>。
+        阶段行也别接 <code>| tail</code> / <code>| head</code>，管道会把输出憋到进程结束才吐，要留档就 <code>&gt; log 2&gt;&amp;1</code> 再另开窗口 <code>tail -f</code>。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r05">
+    <div class="r-top">
+      <div class="r-num">05</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">模块级状态会跨用例泄漏，而且报出来的错和真因毫不相干</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        新增模块级缓存 / 注册表时，<b>同时</b>导出一个 <b>reset*ForTests()</b>，并在用到它的每个测试文件里 <b>beforeEach</b> 调用。
+        这是新增时的强制约定，不是出问题后再补。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        同类问题在同一个仓库里<b>踩了两次</b>，说明单次修复不解决类问题。两次真实样本：一个解码缓存在重建测试文件时被丢掉了 reset，
+        代码页缓存跨用例泄漏，症状报成「<b>count=0 且解码错</b>」；另一个默认图标缓存泄漏，「解析不出默认应用」那条用例读到了前一条用例留下的 <b>.pdf</b> 图标。
+        <b>报出来的错和真实原因毫不相干</b>，是这类缺陷最贵的地方。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        「一批不相干用例同时红」时，先去 <b>mock 工厂</b>找缺的方法——根组件挂载时新增一个订阅、mock 里没有这个方法，
+        就会直接调用 <code>undefined</code> 抛错，让 <b>6 个</b>毫无关系的用例一起红。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §2 ============ -->
+  <h2 class="section" id="g2">
+    <span class="range">06 — 08</span> 作用域：默认作用域总是比你以为的大
+    <span class="sub">动手前问：这条命令的作用域，是不是只有我那几行？</span>
+  </h2>
+
+  <section class="rule" id="r06">
+    <div class="r-top">
+      <div class="r-num">06</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">并行改同一棵树时，所有「作用于整棵树」的操作都换成显式路径</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        暂存 <b>git add &lt;显式路径&gt;</b>，不用 <b>-A</b> / <b>.</b>；提交 <b>git commit &lt;显式路径...&gt;</b>，不用无 pathspec 的 commit；
+        回退 <b>git checkout HEAD -- &lt;显式路径&gt;</b>，不用 <b>git stash</b>。
+        「整份 cp 备份再拷回」与 stash 属于同一类作用域，<em>不因为它不是 git 命令就安全</em>。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        实测代价：一次约 <b>1 分钟</b>的 stash 窗口吃掉了另一组 <b>−7/+1</b> 的灵敏度对照改动；
+        一次「整份 cp 还原」把另一个 agent 刚落的三处注册表生命周期改动覆盖回旧形状，文件编译不过、两个测试文件全红，
+        而报出来的错（<b>registry.history is undefined</b>）与真因完全无关。
+        <b>它们都不报错，只是静默抹掉别人在那段窗口里写入的内容。</b>
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        一轮开始前<b>定死分支 / 工作树，中途不切</b>——子 agent 的写权限钉在它启动时所在的工作树，
+        主会话切走后它每次写入被拒且不报错退出，只是一直重试，从外面看只是「这一组特别慢」。
+        分组按<b>会冲突的文件</b>分，不按任务编号分；组内守「一次 commit = 一个能单独回滚的决定」。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r07">
+    <div class="r-top">
+      <div class="r-num">07</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">作用域推断不出来时，正确做法是不做，而不是猜一个</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        绝不监听家目录或工作区根之上。给每批路径<b>显式的根</b>；拿不到根就不监听，退化成「<b>未知 ⇒ 可用</b>」的安全方向。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        真实样本：一个 hook 拿不到 cwd 时，用「所有路径的公共父目录」当监听根——只要有一件交付物落在下载目录或桌面，
+        公共父目录就上移到 <b>/Users/&lt;name&gt;</b>，即对用户家目录<b>递归 watch</b>。
+        而数据结构本来就带着每组自己的工作目录字段，注释里甚至写着「必须逐组给根，不能让 hook 去猜一个公共父目录」。
+        <b>「取一批路径的公共父目录」这类推断，在文件监听、批量删除、权限授予、清理脚本里会以完全相同的方式爆炸。</b>
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        把「监听根从哪来」写成<b>显式参数</b>而不是计算结果；渲染层拿不到 <code>os.homedir()</code> 时（上下文隔离），
+        判家目录只能靠路径形状或从主进程透一个值过来，<b>不能默认放行</b>。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r08">
+    <div class="r-top">
+      <div class="r-num">08</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">收尾按临时 profile 前缀杀，不按端口、更不按应用名</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        起应用一律用临时 <b>--user-data-dir=&lt;临时目录&gt;</b>，并把应用自己的数据目录环境变量也指到临时处；
+        收尾 <b>pkill -f "user-data-dir=&lt;临时前缀&gt;"</b>。禁止按端口杀，禁止按应用名泛杀。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        主进程的命令行里根本没有调试端口，按端口只杀得掉启动器，留下一地孤儿；按应用名泛杀会连<b>用户自己开着的正式实例</b>一起干掉。
+        临时 profile 前缀是唯一一个「只覆盖我这一轮起的进程」的标识。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        每轮结束跑 <code>down</code> 并确认<b>无孤儿进程</b>；探针脚本、截图、日志只放会话临时目录，<b>永不进仓库</b>。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §3 ============ -->
+  <h2 class="section" id="g3">
+    <span class="range">09 — 11</span> 门禁：可复算的阈值，而不是「注意排版」
+    <span class="sub">每条都是一个能被脚本算出来的数，附带它的回归用例</span>
+  </h2>
+
+  <section class="rule" id="r09">
+    <div class="r-top">
+      <div class="r-num">09</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">只有「出片就是错的」才配当阻断，其余一律是警告</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        门禁必须分级。阻断项一旦混进假阳性，人会<b>整体无视阻断这个信号</b>，真缺陷跟着一起被无视。
+        <em>误报比漏报更伤</em>——信号的价值由它的假阳性率决定，不由覆盖率决定。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        真实代价样本：把「框挨得近」也判成阻断，三份本来没问题的文档报出 <b>16 处假阻断</b>；
+        而流程写着「0 阻断即停、警告不展开」，于是所有人开始整体无视阻断项。
+        同一份文档的 <b>20 处</b>报警里，<b>16 处</b>属于「换行后仍在框内」这种应该降级为警告的形态。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        三层验证越靠前越便宜：<b>结构校验</b>（写入时，失败要一次报全并带行号，不要报一条停一次）→ <b>确定性门禁</b>（不需要模型）→ <b>视觉复核</b>（需要模型能读图）。
+        每类误报的形态和每个真缺陷的坐标都<b>固化成内联构造的回归用例</b>，判据一改就跑这组。
+        另外，视觉复核层「读不了图就整段跳过」：图像分析连续失败 <b>2 次</b>（5xx / 超时 / 空结果）即判定本轮拿不到视觉证据，
+        立刻转结构性复核并在交付说明里注明——<b>不重试、不拆批、不换通道</b>。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r10">
+    <div class="r-top">
+      <div class="r-num">10</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">算得下 ≠ 排得下：度量用的字体不是渲染用的字体</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <div class="r-rule">
+        可复算的几何硬约束（以 <b>960×540</b> 画布、<b>24pt</b> 安全区为例，换画布按比例折算）：
+        <ul>
+          <li>不可断短串（序号 <b>01</b>、<b>5–10%</b>、单位、年份；不含空格 / CJK 且 ≤6 字符）的框宽 <b>≥ 实测宽度 × 1.6</b>；</li>
+          <li>任何文本框满足 <b>y+h ≤ 画布高−安全区</b>、<b>x+w ≤ 画布宽−安全区</b>，仅页脚署名类小字可进安全区，正文不行；</li>
+          <li>上下相邻文本框垂直余量 <b>≥ 8px</b>；</li>
+          <li>装箱折行按 <b>92% 框宽</b>计算，给渲染器字体替换留余量，且用<em>真实字体文件</em>度量 + 独立贪心折行（CJK 逐字、拉丁按词 / 连字符），不能用 <b>ceil(宽度/框宽)</b> 粗估；</li>
+          <li>正文块框高按「字数 ÷ 每行字数 × 行高」预留。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        <b>1.6 是实测值</b>：框宽 <b>1.47×</b> 时离线渲染器仍然会把短串折断，而所有基于字体度量的检查都会说「没问题」。
+        <b>42 高 + 40 间距</b> 这种负余量看着能用，任一侧多换一行就压上。装不下的行不会被裁掉，会溢出框外压住下面的元素。
+        这套落差不属于某个格式：<b>任何「离线度量预判版面 + 交给外部渲染器出片」的链路都有同一个洞。</b>
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        <code>check_text_fit.py &lt;deck&gt; --slack 0.92 --safe-margin 24</code>，
+        退出码 <b>0</b> = 无阻断项（可能仍有警告）、<b>1</b> = 有阻断项，可直接当出片前 gate；
+        <code>--fix</code> 只认三种 kind，做文本级改写（只改 bounds 数字、只包一层 span，保留键顺序与注释），修完自动重跑自检。
+        修复器必须排在渲染<b>之前</b>——它不看渲染产物，排后面白费一整轮渲染。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r11">
+    <div class="r-top">
+      <div class="r-num">11</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">先归一化再和声明值比较，会让检查恒真</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        表格高度按每行实际需要单独算再逐行相加，<b>禁止对行高比例做归一化</b>，缺项等分补（照抄转换器的算法）。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        归一化之后，算出的总高<b>恒等于</b>声明高度，于是「装不下」这条检查在数学上永远不可能触发——门禁绿着，而渲染出来最后一行压到下方文字上。
+        实测两组：声明 <b>262</b> 实需 <b>307</b>、声明 <b>126</b> 实需 <b>158</b>，旧判据只算出 <b>172</b>。
+        <b>「检查算法自身含有恒等式」是一类通用的门禁失效</b>，比漏写检查更隐蔽，因为它看起来是有覆盖的。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        <code>test_layout_checks.py</code>：<b>13 例</b>全内联构造、只依赖标准库、不读任何外部文件。分三类——
+        真缺陷必须报出（<b>262→307</b>、<b>126→158</b>、正文真叠字约 <b>6px</b>）、三份逐页看过的成品必须<b>保持沉默</b>、
+        四类已知误报形态必须消除（横向不相交却报重叠 / 并排等高标签垂直 gap 恒为负 / 单行 12px 距页脚净空 6px 被误判 / 30px 字在 48px 框内居中被误判）。
+        <b>判据与它的回归集必须放在一起，改判据先跑这组。</b>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §4 ============ -->
+  <h2 class="section" id="g4">
+    <span class="range">12 — 13</span> 全绿之后
+    <span class="sub">单测绿 + 类型检查绿 + 逐项真机验证，三者齐备之后剩下的那部分</span>
+  </h2>
+
+  <section class="rule" id="r12">
+    <div class="r-top">
+      <div class="r-num">12</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">缺陷不在实现里，在组合里</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        「每张 issue 各自单测绿 + 各自真机验过 = 这个版本可以发」是错觉。
+        合批发布前必须做一轮<b>按组合走</b>的穷举复验，而不是按 issue 逐张重看。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        实测样本：<b>12 张</b> issue 全部单测绿、类型检查绿、各自也做过真机验证，穷举复验仍查出 <b>14 条缺陷，其中 3 条是这一批修复自己引入的回归</b>。
+        归因分布里<b>没有一条是「实现漏了」，全部是「组合没试过」</b>——所以复验的切分方式必须换轴。
+        两个具体形态值得单独盯：一是「<b>打回已上线行为</b>」（把删除广播改成直接调注册表后，某组件的订阅成了死代码，
+        一条已上线的行为被静默打回，而它的测试是手动派发事件，永远测不出）；
+        二是<b>两条产品规则可能正面冲突且都「实现正确」</b>（「被动过的东西消失了就静默移除」与「文件消失了必须显示失效」无法同时成立，
+        根因是判据把创建它的那次写入也算成了「动过」）。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        会唤起 <b>OS 原生对话框</b>的入口（系统文件选择器、原生确认框）<b>不要点</b>——原生模态接管指针、挡住调试通道，无人值守下会卡死；
+        这类路径交给单测，并在报告里<b>写明未实测</b>。
+      </div>
+    </div>
+  </section>
+
+  <section class="rule" id="r13">
+    <div class="r-top">
+      <div class="r-num">13</div>
+      <div class="r-titlewrap">
+        <h3 class="r-title">全量失败集：数目相同不算证据</h3>
+      </div>
+      <div class="lbl is-rule">Rule</div>
+      <p class="r-rule">
+        大仓库测试套件在全量并发下本身就有抖动，必须与主干<b>逐条 diff</b>，不能比总数。
+        定性顺序固定三步：① 差异的那几条单独跑，单独跑绿 = 抖动；② 看它在不在本次改动的影响面里（<b>git status</b> 一眼能看出碰没碰、有没有 import 关系）；
+        ③ 再采样一次，两次跑出的若是<em>不同的几条</em>，即为抖动确证。
+      </p>
+    </div>
+    <div class="r-why">
+      <div class="lbl">Why</div>
+      <p>
+        挂掉一条、修好一条，数目照样对得上。实测样本：<b>纯主干两次采样分别是 13 条和 12 条失败</b>；
+        另一次全量跑出 <b>120+ 条</b>同一模块的级联失败，而单独跑该文件 <b>204/204 全绿</b>。
+        抖动是<b>规模的属性</b>，不是项目的属性——所以既会让人把套件抖动误判成自己引入的回归，也会反过来漏掉真回归。
+      </p>
+    </div>
+    <div class="r-check">
+      <div class="lbl">Check</div>
+      <div class="check-box">
+        判成抖动也要写明是<b>哪几条、依据是什么</b>——「看着不相干」不是依据。
+        取基线<b>不要用 stash</b>：切到主干（或另起基于主干的分支）取；有并行任务在跑时，让某一组在<b>另一个工作树</b>里取。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §5 ============ -->
+  <h2 class="section" id="g5">
+    <span class="range">05</span> 这些东西是怎么被组织起来的
+    <span class="sub">分层法 + 判据与脚本的互相指认</span>
+  </h2>
+
+  <div class="wrapup">
+    <p>
+      上面每一条单独看都是经验；能不能被别人拿走，取决于它被放在哪一层。所以整包按<b>三层</b>拆：
+    </p>
+    <ul>
+      <li><b>通用层</b>——只写判据与硬约束，<b>不出现任何产品名</b>。比如桌面验收侧的通用层把业务耦合收敛成恰好 <b>5 个钩子</b>
+        （<code>appRoot</code> / <code>launch</code> / <code>isMainWindow</code> / <code>ensureReady</code> / <code>profilePrefix</code>），
+        阶段推进、超时、探活、保活、收尾全部不用使用者写；文档生成侧的绑定层则只需填 <b>6 件事</b>
+        （DSL、转换器、脚本、渲染器探测顺序、图片生成网关等），判据一律留在通用层。</li>
+      <li><b>绑定层</b>——一份填好的真实例子，用来示范「该绑定哪几件事」。换产品只重写这一层。</li>
+      <li><b>事故簿</b>——单独存放「这条规则是哪次事故换来的」，<b>故意不进技能包</b>：包只教怎么做对，
+        事故叙述只在「某条规则看着多余、想删掉」的时候回查。</li>
+    </ul>
+    <p>
+      一个通用层自己的固有失败模式也记在这里：<b>通用层脚本要能住在仓库外</b>——
+      阶段推进器曾因为「从技能库目录解析不到依赖」而挂，这不是使用者的问题，是分层本身带来的。
+    </p>
+  </div>
+
+  <div class="scripts">
+    <div class="hd">脚本</div>
+    <div class="hd">做什么</div>
+    <div class="hd">判据在哪</div>
+
+    <div class="nm">dev-session.mjs</div>
+    <div>
+      阶段推进器，四个子命令 <b>up</b> / <b>run &lt;case&gt;</b> / <b>status</b> / <b>down</b>：
+      一条命令从起应用 → 等调试端口 → 连上 → 过登录 → 就绪，推到「可以写用例」。
+      每阶段向 stderr 打 <b>[dev-session] &lt;毫秒&gt; &lt;阶段名&gt;</b>，每步独立超时，
+      失败打印「✗ 卡在阶段 X」+ 原因 + 诊断命令。
+    </div>
+    <div class="refs"><a href="#r01">01</a><a href="#r04">04</a><a href="#r08">08</a></div>
+
+    <div class="nm">check_text_fit.py</div>
+    <div>
+      装箱 + 版式几何门禁，用<b>真实字体文件</b>度量，带 <b>--fix</b> 自动修复
+      （优先加宽保住字号，加宽不够才降字号，下限为原字号 <b>70%</b> 且不低于 <b>9px</b>，
+      同一行同类文字整组一起降，最多 <b>6 轮</b>）。换 DSL 只改读取层。
+    </div>
+    <div class="refs"><a href="#r09">09</a><a href="#r10">10</a><a href="#r11">11</a></div>
+
+    <div class="nm">test_layout_checks.py</div>
+    <div>
+      上面那套判据的标定集：<b>13 例</b>全内联构造，只需标准库。
+      真缺陷必须报出 / 已验收成品必须沉默 / 四类误报形态必须消除。
+    </div>
+    <div class="refs"><a href="#r11">11</a></div>
+  </div>
+
+  <footer>
+    张力允 · <a href="./index.html">项目集首页</a> · <a href="./ppt.html">PPT 成品展示</a> · <a href="https://github.com/zhangliyun2023">GitHub</a><br>
+    以上判据均来自实际工程与事故复盘，已做去标识化处理；不含任何私有源码、生产配置或内部链接。脚本可在面试时走读。
+  </footer>
+
+</div>
+</body>
+</html>
