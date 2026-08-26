@@ -113,7 +113,7 @@
     <li><b>人审闭环</b>：每轮 prompt 前对工作区做快照，结束后生成 diff 持久化为 Changeset，支持 accept / reject / revert 后再落盘 —— Agent 改码不再是黑箱。</li>
     <li><b>文档管线</b>：自建 document extract/search（PDF/Office、OCR、内容哈希缓存），分级抽取避免大文件拖垮主链路。</li>
     <li><b>状态一致性</b>：工作区文件以磁盘为最终裁决建立 liveness 统一真相源，外部删除或热更新后，文件树、预览与交付物列表不再与实际脱节。</li>
-    <li><b>工程面</b>：monorepo 含 CLI、LLM Gateway、技能市场与门禁化、Mac/Win 打包发版；跨会话状态隔离与工作区文件 liveness 统一真相源。</li>
+    <li><b>工程面</b>：monorepo 含 CLI、LLM Gateway、技能市场安装与门禁化、Mac/Win 打包发版；多会话并行时按会话隔离状态，后台会话不干扰前台。</li>
   </ul>
   <div class="stack">
     <code>Electron</code><code>TypeScript</code><code>Node</code><code>IPC</code>
