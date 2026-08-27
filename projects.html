@@ -310,60 +310,39 @@
   <!-- 06 + 07 并排：BOSS 求职 Agent · Arich 蓝牙 IoT -->
   <div class="grid md:grid-cols-12 gap-6 fade-in">
 
-    <div class="md:col-span-7 project-card bg-surface-container-low rounded-xl p-8 md:p-10 cursor-default">
-      <div class="grid md:grid-cols-5 gap-6 items-start">
+    <a href="projects/hr-board.html" class="md:col-span-7 project-card bg-surface-container-low rounded-xl p-8 md:p-10 group block">
+      <div class="grid md:grid-cols-5 gap-6 items-center">
         <div class="md:col-span-3">
           <div class="flex flex-wrap gap-2 mb-4">
             <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">浏览器自动化</span>
-            <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">Python</span>
-            <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">Tampermonkey</span>
+            <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">LLM 分档</span>
+            <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">Playwright</span>
+            <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">Qwen3-VL</span>
           </div>
           <div class="flex items-center gap-3 mb-3">
             <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">06</span>
-            <h2 class="text-2xl font-headline font-extrabold">BOSS 求职自动化 Agent</h2>
+            <h2 class="text-2xl font-headline font-extrabold">HR 候选人初筛看板</h2>
           </div>
           <p class="text-on-surface-variant text-sm leading-relaxed mb-4">
-            事件监听 + 本地桥接 + Prompt 注入 + 浏览器自动化：智能投递、多轮 IM 自动回复；冷却、去重、日上限、策略降级、队列化任务与频控，长时稳定运行，单日可打满 Boss 直聘简历额度。
+            受企业委托开发的内部初筛系统：把「昂贵的浏览器采集」与「廉价的模型判定」拆成两条独立链路，改判据只重跑后者。已处理 <strong>428</strong> 位候选人、<strong>9</strong> 个岗位并行。
           </p>
-          <div class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2026.01 — 至今 · 独立负责</div>
-        </div>
-        <div class="md:col-span-2">
-          <div class="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container-low select-none" id="boss-gallery">
-            <div class="flex transition-transform duration-500 ease-in-out" id="boss-slides">
-              
-              <img src="assets/personal/boss-resume-send-modal.jpg"   alt="AI Agent 自动选择简历投递" class="w-full flex-shrink-0 object-cover rounded-xl" draggable="false"/>
-              
-            </div>
-            <button onclick="bossSlide(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-surface/70 backdrop-blur flex items-center justify-center text-on-surface hover:bg-surface transition">
-              <span class="material-symbols-outlined text-base">chevron_left</span>
-            </button>
-            <button onclick="bossSlide(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-surface/70 backdrop-blur flex items-center justify-center text-on-surface hover:bg-surface transition">
-              <span class="material-symbols-outlined text-base">chevron_right</span>
-            </button>
-            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5" id="boss-dots">
-              <span class="w-1.5 h-1.5 rounded-full bg-primary transition-opacity" data-idx="0"></span>
-              <span class="w-1.5 h-1.5 rounded-full bg-primary/30 transition-opacity" data-idx="1"></span>
-              <span class="w-1.5 h-1.5 rounded-full bg-primary/30 transition-opacity" data-idx="2"></span>
-            </div>
+          <ul class="space-y-2 text-sm text-on-surface-variant mb-4">
+            <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>采集侧带状态机与重试，34,639 条抓取任务；判定侧只读库，全量重判几分钟出结果。</li>
+            <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary mt-1.5 flex-shrink-0"></span>图片简历走 Qwen3-VL 兜底；打招呼草稿只生成不发送，人工确认后才出去。</li>
+          </ul>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2026.06 · 受托独立开发</span>
+            <span class="material-symbols-outlined text-primary group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
           </div>
         </div>
+        <div class="md:col-span-2">
+          <div class="rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container-low">
+            <img src="assets/personal/hr-board-all.png" alt="候选人初筛看板真机画面（已脱敏）" class="w-full block" loading="lazy"/>
+          </div>
+          <p class="text-[11px] text-on-surface-variant mt-2 leading-relaxed">真机画面 · 姓名已替换为编号，简历与消息正文不渲染</p>
+        </div>
       </div>
-      <script>
-        (function(){
-          var cur = 0, total = 3;
-          var slides = document.getElementById('boss-slides');
-          var dots = document.querySelectorAll('#boss-dots [data-idx]');
-          function go(n){
-            cur = (n + total) % total;
-            slides.style.transform = 'translateX(-' + cur * 100 + '%)';
-            dots.forEach(function(d){ d.className = 'w-1.5 h-1.5 rounded-full bg-primary/30 transition-opacity'; });
-            dots[cur].className = 'w-1.5 h-1.5 rounded-full bg-primary transition-opacity';
-          }
-          window.bossSlide = function(dir){ go(cur + dir); };
-          setInterval(function(){ go(cur + 1); }, 3500);
-        })();
-      </script>
-    </div>
+    </a>
 
     <div class="md:col-span-5 project-card bg-surface-container-low rounded-xl p-8 flex flex-col justify-between cursor-default">
       <div>
