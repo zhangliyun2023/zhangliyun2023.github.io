@@ -1,0 +1,28 @@
+{
+  "generated": "2026-08-26",
+  "source": "/tmp/rv2/liyun (read-only, untouched)",
+  "pipeline": "PIL: crop/redact -> resize to width<=1600 (LANCZOS) -> JPEG q82 progressive+optimize",
+  "images": [
+    {"out":"multi-agent-workbench.jpg","src":"multi-agent-workbench.png","verdict":"ok","processing":"1600px/q82; extra: covered browser-extension floater at right edge and the capybara sticker overlay (bottom-right) with sampled background","project":"多 Agent 实验平台 (#agent-studio / multi-agent)","use":"封面候选：参数 + Agent 编排 + prompt 输入"},
+    {"out":"multi-agent-flow-design.jpg","src":"multi-agent-flow-design.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"主图候选：可视化流程编排画布"},
+    {"out":"multi-agent-dialogue.jpg","src":"multi-agent-dialogue.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"结果证据：逐轮对话详情（《雷雨》虚构角色）"},
+    {"out":"multi-agent-questionnaire-extract.jpg","src":"multi-agent-questionnaire-extract.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"结构化抽取 LLM 量表作答"},
+    {"out":"multi-agent-stats.jpg","src":"multi-agent-stats.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"pre/post t 检验结果表"},
+    {"out":"multi-agent-questionnaire.jpg","src":"multi-agent-questionnaire.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"量表库（含 JCR/中科院分区标注）"},
+    {"out":"multi-agent-experiments.jpg","src":"multi-agent-experiments.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"实验列表页（中英双语）"},
+    {"out":"multi-agent-export.jpg","src":"multi-agent-export.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"次要图：数据导出字段说明（仅字段名，无数据行）"},
+    {"out":"multi-agent-assignment.jpg","src":"multi-agent-assignment.png","verdict":"ok","processing":"1600px/q82","project":"多 Agent 实验平台","use":"次要图：参与者分配（user1-7 合成数据，无密码列）"},
+    {"out":"ai-research-dashboard.jpg","src":"images/ai-research-dashboard.png","verdict":"ok","processing":"1600px/q82","project":"AI Research Workbench (#workbench)","use":"主图：项目管理 + 状态流转 + 统计概览（账号为占位 User）"},
+    {"out":"ai-research-workflow.jpg","src":"images/ai-research-workflow.png","verdict":"ok","processing":"1600px/q82","project":"AI Research Workbench","use":"端到端五步流水线 + Word 导出"},
+    {"out":"ai-research-landing.jpg","src":"images/ai-research-landing.png","verdict":"ok","processing":"1600px/q82","project":"AI Research Workbench","use":"头图/封面（未登录营销页，信息密度低）"},
+    {"out":"autopaper-live-preview.jpg","src":"images/autopaper-live-preview.png","verdict":"ok","processing":"q82（原宽 1440，未放大）","project":"AutoPaper (#autopaper)","use":"仅建议用于 README / 分享卡缩略图；正文价值低（是旧站页面自身预览）"},
+    {"out":"paper-proof-1.jpg","src":"tsinghua-intern-proof-1.png","verdict":"ok","processing":"1600px/q82","project":"清华经管实习 / Nature Comput. Sci. (#gatekeeper)","use":"论文首页；需与 paper-proof-2 成对使用。注：审查建议可改为纯文本 + DOI 链接（期刊排版页有版权顾虑）"},
+    {"out":"paper-proof-2.jpg","src":"tsinghua-intern-proof-2.png","verdict":"ok","processing":"1600px/q82","project":"清华经管实习 / Nature Comput. Sci.","use":"致谢页（L. Zhang 高亮），可核验证据；图注需点明高亮处"},
+    {"out":"boss-resume-send-modal.jpg","src":"boss-resume-send.png","verdict":"redact","processing":"裁切至仅保留中央『请选择需要投递的简历』弹窗 (crop 1215,436,2305,1064)，四周背景全部剔除：已移除顶部『马女士 沐瞳科技 HR』标题栏、底部『周女士 金永聚』整行、左列全部真实头像、右侧『领健(linkedcare)』文字片段。剩余可读文本仅本人简历文件名。已 Read 复核确认","project":"BOSS 求职 Agent","use":"『Agent 自动选简历并发送』证据帧。注意：审查报告建议 BOSS 项目整体不上公开站（关联 proprietary skill-pack），此图是否使用需另行决定"}
+  ],
+  "dropped": [
+    {"src":"boss-chat-monitor.png","reason":"7 位真实 HR 姓名/公司/头像/聊天正文 + DevTools 日志 + 书签栏内部工具"},
+    {"src":"boss-agent-running.png","reason":"至少 4 处独立泄露真实 HR 姓名/公司/JD/招聘话术，打码区域约占画面 60%"},
+    {"src":"multi-agent-users.png","reason":"用户管理页含明文密码列（7 行），凭证类硬红线"}
+  ]
+}

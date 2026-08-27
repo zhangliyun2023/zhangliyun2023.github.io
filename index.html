@@ -1,285 +1,684 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<!--
+  文件定位：首页/个人定位页。输入来自静态服务器或浏览器直接打开的 HTML 请求，
+  输出个人定位、核心项目入口和联系信息，是作品集的第一屏叙事入口。
+-->
+<html class="dark" lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>张力允 · 项目集 | AI Agent 工程</title>
-<meta name="description" content="张力允的项目集：MiraWork 桌面 Agent、Agent Studio 多智能体编排、AI 实证研究工作台、AutoPaper 论文流水线。">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>张力允 · 全栈工程师 & AI Agent 开发者</title>
+<style>.anchor-alias{display:block;position:relative;top:-88px;visibility:hidden;height:0}</style>
+<link href="assets/fonts/fonts.css" rel="stylesheet"/>
+<script src="assets/vendor/tailwind.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          surface: "#0e0e10", "surface-container-low": "#131316",
+          "surface-container": "#19191c", "surface-container-high": "#1f1f23",
+          "surface-container-highest": "#252529", "surface-variant": "#252529",
+          "on-surface": "#e7e4e9", "on-surface-variant": "#acaaaf",
+          primary: "#689cff", "primary-dim": "#8eb3ff", "primary-container": "#4d8efe",
+          "on-primary": "#001e4a", "primary-fixed-dim": "#8eb3ff",
+          tertiary: "#dfb7ff", "tertiary-fixed": "#d5a5ff",
+          secondary: "#a8c8ff", "outline-variant": "#48474c", outline: "#767579",
+          background: "#0e0e10",
+        },
+        fontFamily: { headline: ["Manrope"], body: ["Inter"], label: ["Inter"] },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.75rem", xl: "1rem", full: "9999px" },
+        animation: { "neon-pulse": "neon-pulse 2s ease-in-out infinite" },
+        keyframes: {
+          "neon-pulse": {
+            "0%,100%": { boxShadow: "0 0 6px rgba(104,156,255,.5), 0 0 20px rgba(223,183,255,.25)" },
+            "50%": { boxShadow: "0 0 18px rgba(104,156,255,.8), 0 0 45px rgba(223,183,255,.5)" },
+          },
+        },
+      },
+    },
+  };
+</script>
 <style>
-  :root{
-    --bg:#fbfbfa; --panel:#fff; --line:#e6e4df; --ink:#1b1b19; --muted:#6b6862;
-    --accent:#0f4c81; --accent-soft:#eef3f8; --chip:#f2f1ee;
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #8eb3ff; border-radius: 99px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  html { scroll-behavior: smooth; }
+
+  /* 彩蛋 canvas */
+  #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  /* 悬停发光卡片 */
+  .glow-card {
+    transition: transform .4s cubic-bezier(.23,1,.32,1), border-color .3s, box-shadow .3s;
+    border: 1px solid rgba(72,71,76,.4);
   }
-  @media (prefers-color-scheme: dark){
-    :root{ --bg:#141413; --panel:#1c1c1a; --line:#302f2c; --ink:#eeece7; --muted:#9d9a93;
-           --accent:#7fb2e5; --accent-soft:#1d2733; --chip:#26251f; }
+  .glow-card:hover {
+    transform: translateY(-5px) scale(1.015);
+    border-color: rgba(104,156,255,.4);
+    animation: neon-pulse 2s infinite;
   }
-  *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
-    -webkit-font-smoothing:antialiased;
+
+  /* 技能标签发光 */
+  .skill-tag:hover {
+    background: rgba(104,156,255,.15);
+    border-color: rgba(104,156,255,.5);
+    box-shadow: 0 0 12px rgba(104,156,255,.25);
+    color: #a4c1ff;
   }
-  .wrap{max-width:900px;margin:0 auto;padding:56px 24px 96px}
-  header{margin-bottom:44px}
-  h1{font-size:30px;letter-spacing:.01em;margin:0 0 8px}
-  .tagline{color:var(--muted);font-size:16px;margin:0 0 18px}
-  .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
-  .meta span,.meta a{
-    background:var(--chip);border:1px solid var(--line);border-radius:999px;
-    padding:4px 12px;color:var(--muted);text-decoration:none;
+
+  /* section 淡入 */
+  .fade-in { opacity:0; transform:translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+
+  /* 渐变文字 */
+  .grad-text { background: linear-gradient(135deg, #689cff 0%, #dfb7ff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+  /* aura 背景 — 暗色默认 */
+  body {
+    background:
+      radial-gradient(circle at 70% -5%, rgba(104,156,255,.10) 0%, transparent 45%),
+      radial-gradient(circle at 5% 90%, rgba(223,183,255,.07) 0%, transparent 40%),
+      #0e0e10;
+    transition: background .4s ease, color .3s ease;
   }
-  .meta a:hover{color:var(--accent);border-color:var(--accent)}
-  .note{
-    margin:28px 0 0;padding:12px 16px;border-left:3px solid var(--accent);
-    background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--muted);
+
+  /* ═══ 明亮模式全局覆盖 ═══ */
+  html:not(.dark) body {
+    background:
+      radial-gradient(circle at 70% -5%, rgba(212,160,23,.08) 0%, transparent 45%),
+      radial-gradient(circle at 5% 90%, rgba(121,89,0,.05) 0%, transparent 40%),
+      #fafaf8;
+    color: #1b1c19;
   }
-  h2.section{
-    font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--muted);margin:48px 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line);
+  html:not(.dark) ::-webkit-scrollbar-thumb { background: #d4a017; }
+
+  /* 文字颜色 */
+  html:not(.dark) .text-on-surface { color: #1b1c19 !important; }
+  html:not(.dark) .text-on-surface-variant { color: #4f4634 !important; }
+  html:not(.dark) .text-zinc-300 { color: #2a2a28 !important; }
+  html:not(.dark) .text-zinc-400 { color: #4f4634 !important; }
+  html:not(.dark) .text-zinc-500 { color: #817662 !important; }
+  html:not(.dark) .text-zinc-600 { color: #4f4634 !important; }
+
+  /* 卡片/容器背景 */
+  html:not(.dark) .bg-surface-container-low  { background-color: #f5f3ee !important; }
+  html:not(.dark) .bg-surface-container      { background-color: #f0eee9 !important; }
+  html:not(.dark) .bg-surface-container-high { background-color: #eae8e3 !important; }
+  html:not(.dark) .bg-surface-container-highest { background-color: #e4e2dd !important; }
+
+  /* 边框 */
+  html:not(.dark) .border-outline-variant\/20,
+  html:not(.dark) .border-outline-variant\/40,
+  html:not(.dark) .border-outline-variant\/50 { border-color: rgba(211,197,174,.5) !important; }
+
+  /* 渐变文字 — 切换为金色系 */
+  html:not(.dark) .grad-text {
+    background: linear-gradient(135deg, #795900 0%, #d4a017 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  article{scroll-margin-top:20px;
-    background:var(--panel);border:1px solid var(--line);border-radius:12px;
-    padding:22px 24px;margin-bottom:18px;
+
+  /* 卡片悬停 — 改为金色发光，去掉霓虹 */
+  html:not(.dark) .glow-card { border-color: rgba(211,197,174,.4) !important; }
+  html:not(.dark) .glow-card:hover {
+    animation: none !important;
+    box-shadow: 0 16px 40px -8px rgba(121,89,0,.18), 0 0 0 1px rgba(121,89,0,.08);
+    border-color: rgba(121,89,0,.25) !important;
   }
-  .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:4px}
-  .head h3{font-size:18px;margin:0}
-  .role{font-size:13px;color:var(--accent);background:var(--accent-soft);
-        border-radius:5px;padding:2px 8px}
-  .when{font-size:13px;color:var(--muted);margin-left:auto}
-  .lede{color:var(--muted);margin:8px 0 14px}
-  ul{margin:0 0 14px;padding-left:18px}
-  li{margin-bottom:7px}
-  li b{font-weight:600}
-  .stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-  .stack code{
-    background:var(--chip);border:1px solid var(--line);border-radius:5px;
-    padding:2px 8px;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-    color:var(--muted);
+
+  /* 技能标签 — 金色 */
+  html:not(.dark) .skill-tag:hover {
+    background: rgba(121,89,0,.10) !important;
+    border-color: rgba(121,89,0,.4) !important;
+    box-shadow: 0 0 12px rgba(121,89,0,.15) !important;
+    color: #503a00 !important;
   }
-  .metrics{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));
-    gap:1px;background:var(--line);border:1px solid var(--line);
-    border-radius:9px;overflow:hidden;margin:14px 0;
+
+  /* primary 相关颜色保持不变（蓝色），但可选改为金色 */
+  html:not(.dark) .text-primary { color: #795900 !important; }
+  html:not(.dark) .text-primary-fixed-dim { color: #503a00 !important; }
+  html:not(.dark) .bg-primary\/10 { background-color: rgba(121,89,0,.08) !important; }
+  html:not(.dark) .bg-primary\/15 { background-color: rgba(121,89,0,.12) !important; }
+  html:not(.dark) .border-primary\/20 { border-color: rgba(121,89,0,.2) !important; }
+  html:not(.dark) .border-primary\/25 { border-color: rgba(121,89,0,.25) !important; }
+
+  /* tertiary 紫色 → 暖棕 */
+  html:not(.dark) .text-tertiary { color: #77574c !important; }
+  html:not(.dark) .text-tertiary-fixed { color: #53372d !important; }
+  html:not(.dark) .bg-tertiary\/10 { background-color: rgba(119,87,76,.08) !important; }
+  html:not(.dark) .border-tertiary\/20 { border-color: rgba(119,87,76,.2) !important; }
+
+  /* secondary */
+  html:not(.dark) .text-secondary { color: #655e4d !important; }
+  html:not(.dark) .bg-secondary\/10 { background-color: rgba(101,94,77,.08) !important; }
+  html:not(.dark) .border-secondary\/20 { border-color: rgba(101,94,77,.2) !important; }
+
+  /* CTA 渐变按钮 — 改为金色 */
+  html:not(.dark) .bg-gradient-to-r.from-primary.to-tertiary,
+  html:not(.dark) .bg-gradient-to-r.from-primary { 
+    background-image: linear-gradient(to right, #795900, #d4a017) !important;
   }
-  .metrics div{background:var(--panel);padding:12px 14px}
-  .metrics b{display:block;font-size:19px;color:var(--accent);font-weight:600;line-height:1.3}
-  .metrics span{font-size:12px;color:var(--muted)}
-  .links{margin-top:14px;font-size:13.5px}
-  .links a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
-  .links a:hover{border-bottom-color:var(--accent)}
-  .links .private{color:var(--muted)}
-  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);
-         font-size:13px;color:var(--muted)}
+  html:not(.dark) .from-primary.to-tertiary { --tw-gradient-from: #795900; --tw-gradient-to: #d4a017; }
+  html:not(.dark) a.from-primary, html:not(.dark) button.from-primary {
+    background: linear-gradient(to right, #795900, #d4a017) !important;
+    color: #ffffff !important;
+  }
+
+  /* 联系 section 背景 */
+  html:not(.dark) .bg-surface-container.rounded-2xl { background-color: #f0eee9 !important; }
+
+  /* 教育/卡片中的渐变装饰 */
+  html:not(.dark) .from-primary.to-tertiary.flex { 
+    background: linear-gradient(to bottom right, #795900, #d4a017) !important;
+  }
 </style>
 </head>
-<body>
-<div class="wrap">
+<body class="text-on-surface font-body overflow-x-hidden min-h-screen">
+<canvas id="bg-canvas"></canvas>
 
-<header>
-  <h1>张力允</h1>
-  <p class="tagline">AI Agent 工程 · 桌面与平台侧全栈 · 上海</p>
-  <div class="meta">
-    <span>上海大学 · 管理科学与工程 硕士 · 2023–2026</span>
-    <a href="https://github.com/zhangliyun2023">GitHub</a>
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-6 md:px-10 h-18 py-4">
+    <a href="index.html" class="text-xl font-bold font-headline tracking-tight grad-text">张力允</a>
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+      <a href="index.html" class="text-primary border-b border-primary pb-0.5">主页</a>
+      <a href="projects.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">项目</a>
+      <a href="index.html#experience" class="text-zinc-400 hover:text-zinc-100 transition-colors">经历</a>
+      <a href="index.html#contact" class="text-zinc-400 hover:text-zinc-100 transition-colors">联系</a>
+    </div>
+    <button id="theme-toggle" class="material-symbols-outlined text-primary active:scale-95 transition-transform">dark_mode</button>
   </div>
-  <p class="note">
-    本页是项目说明页，用于替代此前托管在临时域名上的 Demo 链接。
-    多数项目源码位于私有仓库（含生产配置与用户数据），此处只公开架构、职责与可量化结果；
-    需要演示或代码走读可在面试时提供。
-  </p>
-</header>
+  <div class="h-px w-full bg-gradient-to-r from-transparent via-outline-variant/40 to-transparent"></div>
+</nav>
 
-<h2 class="section">在职项目</h2>
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="relative z-10 pt-36 pb-28 px-6 md:px-10 max-w-7xl mx-auto">
+  <div class="grid lg:grid-cols-12 gap-12 items-center">
+    <div class="lg:col-span-7">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6 text-xs font-label uppercase tracking-widest text-primary-fixed-dim">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+        上海 · AI 应用 / 平台工程
+      </div>
+      <h1 class="font-headline text-6xl md:text-8xl font-extrabold tracking-tighter leading-none mb-4">
+        张<span class="grad-text">力允</span>
+      </h1>
+      <p class="text-xl md:text-2xl text-zinc-300 font-headline font-light mb-3 tracking-tight">
+        全栈开发 · AI 应用与平台工程
+      </p>
+      <p class="text-on-surface-variant text-lg leading-relaxed max-w-xl mb-10">
+        上海大学管理科学与工程硕士在读，主力 Python / FastAPI 与 TypeScript / Next.js，全栈独立交付多个 AI Agent、科研工具与 SaaS 系统，擅长把复杂流程做成真正可用的产品。
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="projects.html" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-primary to-tertiary text-on-primary font-bold hover:shadow-[0_0_30px_rgba(104,156,255,.4)] transition-all active:scale-95">
+          查看项目 <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </a>
+        <a href="index.html#contact" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-outline-variant/50 text-zinc-300 hover:border-primary/50 hover:text-primary transition-all">
+          联系我
+        </a>
+      </div>
+    </div>
+    <div class="lg:col-span-5 flex flex-col gap-5">
+      <!-- 统计卡片 -->
+      <div class="grid grid-cols-3 gap-4">
+        <div class="glow-card bg-surface-container rounded-xl p-5 text-center">
+          <div class="text-3xl font-headline font-extrabold text-primary mb-1">50+</div>
+          <div class="text-xs font-label uppercase tracking-wider text-on-surface-variant">真实用户</div>
+        </div>
+        <div class="glow-card bg-surface-container rounded-xl p-5 text-center">
+          <div class="text-3xl font-headline font-extrabold text-tertiary mb-1">20+</div>
+          <div class="text-xs font-label uppercase tracking-wider text-on-surface-variant">付费转化</div>
+        </div>
+        <div class="glow-card bg-surface-container rounded-xl p-5 text-center">
+          <div class="text-3xl font-headline font-extrabold text-secondary mb-1">60+</div>
+          <div class="text-xs font-label uppercase tracking-wider text-on-surface-variant">课堂使用</div>
+        </div>
+      </div>
+      <!-- 联系信息卡 -->
+      <div class="glow-card bg-surface-container rounded-xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-symbols-outlined text-primary">contact_page</span>
+          <span class="font-semibold text-on-surface">快速联系</span>
+        </div>
+        <div class="space-y-2 text-sm text-on-surface-variant">
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">phone</span>16637143451</div>
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">mail</span>liyunzhang2023@163.com</div>
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-base text-tertiary">location_on</span>上海大学 · 管理科学与工程硕士 · 2026届</div>
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-base text-secondary">link</span><a href="index.html" target="_blank" rel="noopener" class="hover:text-primary transition-colors">项目主页</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<article id="desktop-agent">
-  <div class="head">
-    <h3>MiraWork · 编程 + 办公双场景桌面 Agent</h3>
-    <span class="role">独立 0→1 / 持续主导</span>
-    <span class="when">2026.05 – 至今</span>
+<!-- ═══════════════ 技能 ═══════════════ -->
+<section class="relative z-10 py-20 px-6 md:px-10 max-w-7xl mx-auto fade-in">
+  <div class="mb-12">
+    <span class="text-xs font-label uppercase tracking-[.2em] text-primary mb-3 block">技术能力</span>
+    <h2 class="text-4xl font-headline font-extrabold tracking-tight">专业技能栈</h2>
   </div>
-  <p class="lede">
-    上海语生科学技术。用户在同一个本地工作区里：读 PDF/Word/Excel/PPT → 分析数据 →
-    写代码并运行 → 产出 Word / PPT / 图表。编程侧改动经 Changeset 人审后才落盘。
-  </p>
-  <div class="metrics">
-    <div><b>31 万行</b><span>本人贡献代码</span></div>
-    <div><b>49%</b><span>占现有代码库</span></div>
-    <div><b>2 周</b><span>入职到首版内测</span></div>
-    <div><b>40+</b><span>内部深度用户</span></div>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="glow-card bg-surface-container-low rounded-xl p-7">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center"><span class="material-symbols-outlined text-primary">code</span></div>
+        <span class="font-bold text-on-surface">主力语言 & 后端</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Python</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">FastAPI</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Node.js / Express</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Pydantic</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">uvicorn</span>
+      </div>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-7">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-tertiary/15 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary">database</span></div>
+        <span class="font-bold text-on-surface">数据库 & 通信</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">PostgreSQL</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">MongoDB</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Redis</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Prisma ORM</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">WebSocket</span>
+      </div>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-7">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-secondary/15 flex items-center justify-center"><span class="material-symbols-outlined text-secondary">smart_toy</span></div>
+        <span class="font-bold text-on-surface">AI / Agent</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">多 Agent 编排</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Prompt 工程</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">LLaMA Factory 微调</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">多 Provider 封装</span>
+      </div>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-7">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center"><span class="material-symbols-outlined text-primary">web</span></div>
+        <span class="font-bold text-on-surface">前端</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Vue 3</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Next.js / React</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">TypeScript</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">TailwindCSS</span>
+      </div>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-7">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-tertiary/15 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary">precision_manufacturing</span></div>
+        <span class="font-bold text-on-surface">工程实践</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Git</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Docker</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Pipeline 架构</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">断点续跑</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Swagger API 文档</span>
+      </div>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-7">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-secondary/15 flex items-center justify-center"><span class="material-symbols-outlined text-secondary">open_in_browser</span></div>
+        <span class="font-bold text-on-surface">浏览器自动化</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Playwright</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">Tampermonkey</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">事件监听注入</span>
+        <span class="skill-tag px-3 py-1 rounded-full border border-outline-variant/30 text-xs text-on-surface-variant transition-all cursor-default">本地事件服务</span>
+      </div>
+    </div>
   </div>
-  <ul>
-    <li><b>运行时集成</b>：Electron 主进程嵌入 coding agent，经 IPC 推送流式 message 与 tool_execution；多工作区 / 多 session，带图 prompt 自动切 Vision 模型。</li>
-    <li><b>人审闭环</b>：每轮 prompt 前对工作区做快照，结束后生成 diff 持久化为 Changeset，支持 accept / reject / revert 后再落盘 —— Agent 改码不再是黑箱。</li>
-    <li><b>文档管线</b>：自建 document extract/search（PDF/Office、OCR、内容哈希缓存），分级抽取避免大文件拖垮主链路。</li>
-    <li><b>状态一致性</b>：工作区文件以磁盘为最终裁决建立 liveness 统一真相源，外部删除或热更新后，文件树、预览与交付物列表不再与实际脱节。</li>
-    <li><b>工程面</b>：monorepo 含 CLI、LLM Gateway、技能市场安装与门禁化、Mac/Win 打包发版；多会话并行时按会话隔离状态，后台会话不干扰前台。</li>
-  </ul>
-  <div class="stack">
-    <code>Electron</code><code>TypeScript</code><code>Node</code><code>IPC</code>
-    <code>pnpm monorepo</code><code>Vision 模型路由</code><code>OCR</code>
-  </div>
-  <style>
-    .showcase{margin:16px 0 0}
-    .showcase a{
-      display:flex;align-items:center;gap:13px;text-decoration:none;color:inherit;
-      background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;
-      padding:13px 16px;transition:transform .22s cubic-bezier(.2,.7,.3,1),box-shadow .22s;
-    }
-    .showcase a:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(15,76,129,.55)}
-    .showcase-ic{
-      flex:0 0 auto;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
-      background:var(--accent);color:var(--panel);font-size:11px;padding-left:2px;
-    }
-    .showcase-txt{font-size:13.5px;color:var(--muted);line-height:1.5}
-    .showcase-txt b{display:block;font-size:14.5px;color:var(--accent);font-weight:600}
-    .showcase-go{margin-left:auto;color:var(--accent);font-size:16px;transition:transform .22s}
-    .showcase a:hover .showcase-go{transform:translateX(3px)}
-    @media (max-width:520px){ .showcase-go{display:none} }
-  </style>
-  <p class="showcase">
-    <a href="./ppt.html">
-      <span class="showcase-ic" aria-hidden="true">▶</span>
-      <span class="showcase-txt"><b>看成品 · Agent 自动生成 PPT 展示</b>5 份样张 · 50 页 · 含「AI 生图 vs 联网搜图」同题对照</span>
-      <span class="showcase-go" aria-hidden="true">→</span>
+</section>
+
+<!-- ═══════════════ 精选项目 ═══════════════ -->
+<section class="relative z-10 py-20 px-6 md:px-10 max-w-7xl mx-auto fade-in">
+  <div class="flex justify-between items-end mb-12">
+    <div>
+      <span class="text-xs font-label uppercase tracking-[.2em] text-primary mb-3 block">精选作品</span>
+      <h2 class="text-4xl font-headline font-extrabold tracking-tight">代表项目</h2>
+    </div>
+    <a href="projects.html" class="hidden md:inline-flex items-center gap-2 text-sm text-primary hover:underline underline-offset-4">
+      查看全部项目 <span class="material-symbols-outlined text-sm">arrow_forward</span>
     </a>
-  </p>
-  <p class="showcase">
-    <a href="./methodology.html">
-      <span class="showcase-ic" aria-hidden="true">✓</span>
-      <span class="showcase-txt"><b>可沉淀的方法论 · 13 条判据 + 可跑的门禁脚本</b>不是「注重工程质量」，是一批不知道就会做错、而且错得看不出来的规则</span>
-      <span class="showcase-go" aria-hidden="true">→</span>
+  </div>
+
+  <div class="grid md:grid-cols-12 gap-6">
+    <!-- 大卡片 -->
+    <span id="autopaper" class="anchor-alias" aria-hidden="true"></span><a href="projects/autopaper.html" class="md:col-span-7 glow-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[280px] group relative overflow-hidden">
+      <div class="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+        <span class="material-symbols-outlined text-[8rem] text-primary">article</span>
+      </div>
+      <div>
+        <div class="flex gap-2 mb-4">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">Python</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">Playwright</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">Next.js</span>
+        </div>
+        <h3 class="text-2xl font-headline font-extrabold mb-3">Auto-Paper 论文生成平台</h3>
+        <p class="text-on-surface-variant text-sm leading-relaxed max-w-md">将论文生成拆成预检、文献检索、多模型生成、装配与交付等节点，支持 fast / standard / high 三档策略，已服务 50+ 用户。</p>
+      </div>
+      <div class="flex items-center justify-between mt-6">
+        <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2026.01 — 至今</span>
+        <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      </div>
     </a>
-  </p>
-  <p class="links private">口径：git blame 于 HEAD，2470 个手写源文件，已排除依赖锁文件、构建产物与 vendored 资源；其中测试代码 11.8 万行。源码位于公司私有 GitLab，不公开。</p>
-</article>
 
-<h2 class="section">独立项目</h2>
+    <!-- 右侧两个小卡片 -->
+    <div class="md:col-span-5 flex flex-col gap-6">
+      <span id="workbench" class="anchor-alias" aria-hidden="true"></span><a href="projects/workbench.html" class="glow-card bg-surface-container rounded-xl p-7 flex flex-col justify-between flex-1 group relative overflow-hidden">
+        <div class="absolute top-3 right-3 opacity-5 group-hover:opacity-10 transition-opacity">
+          <span class="material-symbols-outlined text-[5rem] text-tertiary">science</span>
+        </div>
+        <div>
+          <div class="flex gap-2 mb-3">
+            <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">FastAPI</span>
+            <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">Next.js</span>
+          </div>
+          <h3 class="text-xl font-headline font-extrabold mb-2">AI 实证研究平台</h3>
+          <p class="text-on-surface-variant text-xs leading-relaxed">FastAPI + PostgreSQL + Next.js 全栈，集成多 Provider LLM，生产环境运行。</p>
+        </div>
+        <div class="flex items-center justify-between mt-4">
+          <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2025.12 — 至今</span>
+          <span class="material-symbols-outlined text-primary text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </a>
+      <span id="mirawork" class="anchor-alias" aria-hidden="true"></span><span id="desktop-agent" class="anchor-alias" aria-hidden="true"></span><a href="projects.html" class="glow-card bg-surface-container-high rounded-xl p-7 flex items-center justify-between group">
+          <div>
+            <p class="font-bold text-on-surface mb-1">MiraWork · 编程 + 办公桌面 Agent</p>
+            <p class="text-xs text-on-surface-variant">Electron + coding agent · Changeset 人审后落盘 · 本地读 PDF/Office 出 Word/PPT/图表</p>
+          </div>
+          <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform text-2xl">arrow_forward</span>
+        </a>
+    </div>
+  </div>
 
-<article id="agent-studio">
-  <div class="head">
-    <h3>Agent Studio · 多智能体编排与自愈运行时</h3>
-    <span class="role">全栈 · 独立开发</span>
-    <span class="when">2026.03 – 至今</span>
+  <!-- 其他重点项目 -->
+  <div class="grid md:grid-cols-4 gap-4 mt-6">
+    <a href="projects/multi-agent.html" class="glow-card bg-surface-container-low rounded-xl p-5 group">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-primary text-lg">forum</span>
+        <p class="font-bold text-sm">多 Agent 实验平台</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant leading-relaxed">Vue 3 + WebSocket · 60+ 课堂用户</p>
+    </a>
+    <span id="agent-studio" class="anchor-alias" aria-hidden="true"></span><div class="glow-card bg-surface-container-low rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-primary text-lg">account_tree</span>
+        <p class="font-bold text-sm">Agent Studio · 多智能体编排</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant leading-relaxed">8 个异构 Agent · Vision 质检自愈 · checkpoint 断点续跑</p>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-secondary text-lg">description</span>
+        <p class="font-bold text-sm">DOCX Agent Studio</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant leading-relaxed">本地优先的 Word 诊断 / 补丁 / 审阅 · skill-pack 体系 · 浏览器操作与提交红线</p>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-tertiary text-lg">usb</span>
+        <p class="font-bold text-sm">AMJ 离线学术专家 U 盘</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant leading-relaxed">QLoRA · RAG · Ollama 离线即插即用</p>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-secondary text-lg">smart_toy</span>
+        <p class="font-bold text-sm">BOSS 求职 Agent</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant leading-relaxed">Tampermonkey + 本地桥 + Prompt 注入</p>
+    </div>
+    <div class="glow-card bg-surface-container-low rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-primary text-lg">bluetooth</span>
+        <p class="font-bold text-sm">Arich · CH582M 蓝牙 IoT</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant leading-relaxed">BLE 固件 + UniApp 移动端 Demo</p>
+    </div>
   </div>
-  <p class="lede">
-    把「自然语言 → 可运行原型」做成<b>可观测</b>的 Agent 工程平台。
-    用可玩原型作为验证载体，而不是单纯的游戏 Demo —— 无需先操作试玩，
-    从首屏就能看到 Agent 如何规划、调用工具、失败自愈和复盘。
-  </p>
-  <ul>
-    <li><b>编排</b>：8 个异构 Agent（Designer / Coder / Validator / Visual Inspector / Reflector 等）按阶段编排；Tool Registry 统一文件、Python、浏览器、Web 检索等工具调用。</li>
-    <li><b>可观测</b>：前端实时展示 SSE 事件流、打分卡、质量走势与策略切换。</li>
-    <li><b>自愈运行时</b>：无头 Chromium 真实渲染 + Vision 质检；失败后进入 Patch / Recode 双模干预，支持最佳版本回退与自动修复。</li>
-    <li><b>可续跑</b>：自研 Intent 级多模型路由、退避降级、checkpoint 断点续跑。</li>
-    <li><b>分层记忆</b>：Rules / Mistakes / Templates 三层，让失败经验可复用而不是每次从头试。</li>
-  </ul>
-  <div class="stack">
-    <code>多 Agent 编排</code><code>Tool Registry</code><code>SSE</code>
-    <code>Headless Chromium</code><code>Vision 质检</code><code>Checkpoint</code><code>多模型路由</code>
-  </div>
-</article>
+</section>
 
-<article id="workbench">
-  <div class="head">
-    <h3>AI 实证研究工作台</h3>
-    <span class="role">全栈 · 独立负责</span>
-    <span class="when">2025.12 – 至今</span>
-  </div>
-  <p class="lede">
-    面向社科、管理、医学、经济领域研究者的在线实证研究平台：
-    数据上传 → 预处理 → 变量与构念配置 → 统计分析 → Word 报告导出，全流程 Web 化。
-  </p>
-  <div class="metrics">
-    <div><b>18 种</b><span>统计分析方法</span></div>
-    <div><b>700+</b><span>量表知识库</span></div>
-    <div><b>100+</b><span>理论条目</span></div>
-    <div><b>50+ / 20+</b><span>注册 / 付费用户</span></div>
-  </div>
-  <ul>
-    <li><b>方法矩阵</b>：SEM、ANOVA、Logistic、HLM、Meta、DID、PSM、面板、生存分析、时间序列、fsQCA 等；前端注册表 + 统一 <code>POST /api/projects/[id]/&lt;track&gt;/run</code> 模式，加第 19 种方法只需加 Python 模块 + 路由 + 注册项。</li>
-    <li><b>前后端分离式计算</b>：Next.js API 负责鉴权、业务与持久化；Python FastAPI 承载重计算（pandas / statsmodels / semopy / scikit-learn），返回结构化 tables / charts / interpretation。</li>
-    <li><b>RAG 知识层</b>：聚合 700+ 量表与 100+ 理论，支撑构念识别与方法推荐；6 种研究场景自动匹配方法组合。</li>
-    <li><b>任务系统</b>：多机 Worker（A/B/C）最小负载优先调度，单机并发上限 3，队列满则拒绝而非堆积。</li>
-    <li><b>计费闭环</b>：预估 → 预扣 → 结算 → 释放全生命周期，含支付对接。</li>
-    <li><b>灰度</b>：Feature Flag 控制分析方法可见性，渐进开放。</li>
-  </ul>
-  <div class="stack">
-    <code>Next.js 14</code><code>TypeScript</code><code>Prisma</code><code>PostgreSQL</code>
-    <code>FastAPI</code><code>statsmodels</code><code>semopy</code><code>S3</code><code>RAG</code>
-  </div>
-  <p class="links private">源码私有（含生产配置与用户数据）。</p>
-</article>
+<!-- ═══════════════ 实习经历 ═══════════════ -->
+<section id="experience" class="relative z-10 py-20 px-6 md:px-10 max-w-7xl mx-auto fade-in">
+  <span class="text-xs font-label uppercase tracking-[.2em] text-primary mb-3 block">工作经历</span>
+  <h2 class="text-4xl font-headline font-extrabold tracking-tight mb-12">实习经历</h2>
 
-<article id="autopaper">
-  <div class="head">
-    <h3>AutoPaper · 论文自动化流水线</h3>
-    <span class="role">全栈 · 独立负责</span>
-    <span class="when">2026.01 – 至今</span>
-  </div>
-  <p class="lede">
-    实证工作台的姊妹系统：把统计结果交给 Worker 集群，
-    经审批与多机调度后自动生成带真实引用的学术论文 Word。
-    核心问题是<b>长任务「一处失败整链重跑」</b>。
-  </p>
-  <ul>
-    <li><b>逆序写作 + 多阶段 Pipeline</b>：统计 → 分析 → 引用补搜 → 写作 → 校验，优先锁定数据与结论链，降低长文返工成本。</li>
-    <li><b>步骤级检查点</b>：任一步失败可从最近 checkpoint 恢复，避免全流程重跑；run 归档便于对比与审计。</li>
-    <li><b>多 Provider 统一封装</b>：DeepSeek / Gemini / OpenAI 等，流式与错误码差异收敛在适配层；主链路异常时 fallback + 指数退避重试。</li>
-    <li><b>检索子 Agent</b>：Playwright 驱动 Elicit / Google Scholar 检索与引用解析，输出 APA / GB-T 等格式。</li>
-    <li><b>基线优先门</b>：新功能合并前跑 smoke，等价 CI 门控，防止长 Pipeline 回归。</li>
-    <li><b>交付</b>：三档质量策略（fast / standard / high），Webhook 回写 step/log 状态，产物进 S3，下载走票据化 API。</li>
-  </ul>
-  <div class="metrics">
-    <div><b>50+</b><span>服务用户</span></div>
-    <div><b>MSCE 2026</b><span>产出论文录用</span></div>
-  </div>
-  <div class="stack">
-    <code>Python Pipeline</code><code>Playwright</code><code>Webhook</code>
-    <code>Checkpoint</code><code>多 Provider Fallback</code><code>Smoke/CI 门禁</code>
-  </div>
-  <p class="links private">源码私有。</p>
-</article>
+  <div class="space-y-6">
+    <!-- 上海人工智能实验室 -->
+    <div class="glow-card bg-surface-container rounded-xl p-8">
+      <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+        <div>
+          <h3 class="text-xl font-headline font-bold">上海人工智能实验室</h3>
+          <p class="text-primary mt-1 font-medium">AI 产品开发实习生</p>
+        </div>
+        <span class="text-xs font-label uppercase tracking-wider text-on-surface-variant border border-outline-variant/30 px-3 py-1.5 rounded-full whitespace-nowrap">2026.01 — 至今</span>
+      </div>
+      <ul class="space-y-3 text-on-surface-variant text-sm leading-relaxed">
+        <li class="flex items-start gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>独立负责 Auto-Paper：以大模型工具调用 + 多步骤编排落地科研写作，串联 Playwright 浏览器自动化、多 LLM Provider、对象存储与 Webhook，形成 Next.js + Prisma + Python Pipeline 全链路。</li>
+        <li class="flex items-start gap-3"><span class="w-1.5 h-1.5 rounded-full bg-tertiary mt-1.5 flex-shrink-0"></span>设计 fast / standard / high 三档策略与“申请 → 审核 → 异步 Worker → 预检/全文 → Word 交付”流程，已服务 50+ 用户，40+ 人将产出用于课程作业草稿。</li>
+        <li class="flex items-start gap-3"><span class="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 flex-shrink-0"></span>推动项目成果进入真实论文场景，产出论文获 MSCE 2026 录用，验证了“模型决策 + 工程交付”的可落地性。</li>
+      </ul>
+    </div>
 
-<h2 class="section">研究与其他</h2>
-
-<article id="gatekeeper">
-  <div class="head">
-    <h3>研究想法评估平台 · Pairwise 排序与 Generator–Judge</h3>
-    <span class="role">清华经管 · 算法与产品化</span>
-    <span class="when">2024.09 – 2026.01</span>
+    <!-- 其他经历简列 -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="glow-card bg-surface-container-low rounded-xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-lg">groups</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-on-surface">南通猫鼬云信息科技</h4>
+            <p class="text-xs text-on-surface-variant mt-1 mb-2">2025.09 — 2026.01 · AI 产品实习生</p>
+            <p class="text-xs text-on-surface-variant leading-relaxed">设计并实现多 Agent 协作的 B 端产品方案引擎，按业务场景和讨论阶段自动触发不同角色协作输出方案，底层以 FastAPI + Next.js + WebSocket + 状态机支撑多租户迭代。</p>
+          </div>
+        </div>
+      </div>
+      <div class="glow-card bg-surface-container-low rounded-xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-tertiary text-lg">smart_toy</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-on-surface">上海近屿智能科技</h4>
+            <p class="text-xs text-on-surface-variant mt-1 mb-2">2025.03 — 2025.08 · AI 产品实习生</p>
+            <p class="text-xs text-on-surface-variant leading-relaxed">端到端负责 AI 面试陪练系统开发，完成 H5 / 小程序交互、训练数据构建、模型调优与微信小程序上线，持续推进灰度发布后的问题收敛。</p>
+          </div>
+        </div>
+      </div>
+      <div class="glow-card bg-surface-container-low rounded-xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-secondary text-lg">school</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-on-surface">清华大学经济管理学院</h4>
+            <p class="text-xs text-on-surface-variant mt-1 mb-2">2024.09 — 2026.01 · 数据分析与方案实习生</p>
+            <p class="text-xs text-on-surface-variant leading-relaxed">并行负责 <em>Nature Computational Science</em> 论文与研究想法评估平台两条线：搭建训练数据管线、组织 Pairwise 实验与真实评分采集，推动平台从零上线。</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <ul>
-    <li><b>Pairwise Comparison</b>：针对大模型评估科研 Idea 时「两端准（95%）、中间混淆（50%）」的痛点，把绝对打分改成两两博弈排序，把模糊分类转成高置信度排序问题。</li>
-    <li><b>Generator–Judge 解耦</b>：Generator 生成详细评审理由（Chain of Thought），Judge 读理由做最终裁决，缓解单模型长逻辑推理的注意力发散。</li>
-    <li><b>Benchmarking</b>：构建 Idea 评估数据集，横向对比 GPT-4.1、Kimi 等基座与微调策略。</li>
-    <li>参与 <i>Nature Computational Science</i> 论文三轮返修的数据与代码管线工作。</li>
-  </ul>
-  <p class="links"><a href="https://gatekeeper.spansurvey.net">gatekeeper.spansurvey.net</a> · 平台已上线</p>
-</article>
+</section>
 
-<article id="rag-qlora">
-  <div class="head">
-    <h3>管理学顶刊文献 RAG + QLoRA 本地部署</h3>
-    <span class="role">独立开发</span>
-    <span class="when">2025.11 – 2025.12</span>
+<!-- ═══════════════ 教育背景 ═══════════════ -->
+<section class="relative z-10 py-20 px-6 md:px-10 max-w-7xl mx-auto fade-in">
+  <span class="text-xs font-label uppercase tracking-[.2em] text-primary mb-3 block">学历</span>
+  <h2 class="text-4xl font-headline font-extrabold tracking-tight mb-12">教育背景</h2>
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="glow-card bg-surface-container rounded-xl p-8 flex items-start gap-5">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-tertiary flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-on-primary">school</span>
+      </div>
+      <div>
+        <div class="text-xs font-label uppercase tracking-wider text-primary mb-1">2023 — 2026</div>
+        <h3 class="text-xl font-headline font-bold mb-1">上海大学</h3>
+        <p class="text-on-surface-variant text-sm">管理科学与工程 · 硕士</p>
+      </div>
+    </div>
+    <div class="glow-card bg-surface-container rounded-xl p-8 flex items-start gap-5">
+      <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 border border-outline-variant/30">
+        <span class="material-symbols-outlined text-on-surface-variant">school</span>
+      </div>
+      <div>
+        <div class="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-1">2018 — 2022</div>
+        <h3 class="text-xl font-headline font-bold mb-1">郑州轻工业大学</h3>
+        <p class="text-on-surface-variant text-sm">电子商务 · 本科</p>
+      </div>
+    </div>
   </div>
-  <ul>
-    <li>文档清洗 docx→Markdown，切块入 Chroma 四分库（16 篇 AMJ 文献、346+ chunk）+ bge-small-zh；检索与生成拆层验收。</li>
-    <li>Qwen3.5-9B QLoRA（186 条 Alpaca 样本，3 epoch / 72 step，train_loss ≈ 1.395，约 7.5h）合并导出 GGUF；Ollama F16 / Q8 多别名共用权重、SYSTEM prompt 分流。</li>
-    <li>脚本化评测：检索评测 + 2×2 生成消融，把「有没有变好」从主观感受改成可复跑脚本。</li>
-    <li>GGUF 与 Ollama 运行环境可封装至 U 盘，离线即插即用。</li>
-  </ul>
-  <div class="stack">
-    <code>Chroma</code><code>bge-small-zh</code><code>QLoRA</code><code>GGUF</code><code>Ollama</code>
-  </div>
-</article>
+</section>
 
-<footer>
-  张力允 · 上海 · 期望方向：AI Agent 工程 / LLM 平台与应用全栈<br>
-  联系方式见简历。本页不含任何私有源码或生产配置。
+<!-- ═══════════════ 联系 ═══════════════ -->
+<section id="contact" class="relative z-10 py-24 px-6 md:px-10 max-w-7xl mx-auto fade-in">
+  <div class="bg-surface-container rounded-2xl p-12 md:p-16 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-72 h-72 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-tertiary/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+    <div class="relative z-10 max-w-xl">
+      <span class="text-xs font-label uppercase tracking-[.2em] text-primary mb-4 block">联系方式</span>
+      <h2 class="text-4xl font-headline font-extrabold tracking-tight mb-4">一起做点有意思的东西</h2>
+      <p class="text-on-surface-variant mb-10 leading-relaxed">目前开放实习机会，擅长 Python 后端 / AI Agent / 全栈开发，上手快，能直接产出。</p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="mailto:liyunzhang2023@163.com" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-primary to-tertiary text-on-primary font-bold hover:shadow-[0_0_25px_rgba(104,156,255,.4)] transition-all active:scale-95">
+          <span class="material-symbols-outlined text-sm">mail</span>发邮件
+        </a>
+        <a href="tel:16637143451" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-outline-variant/50 text-zinc-300 hover:border-primary/50 hover:text-primary transition-all">
+          <span class="material-symbols-outlined text-sm">phone</span>16637143451
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="relative z-10 border-t border-outline-variant/20 py-10 px-6 md:px-10">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <div class="font-headline font-black text-lg grad-text">张力允</div>
+    <div class="flex flex-wrap justify-center gap-8 text-xs font-label uppercase tracking-widest text-zinc-500">
+      <a href="index.html" class="hover:text-primary transition-colors">主页</a>
+      <a href="projects.html" class="hover:text-primary transition-colors">项目</a>
+      <a href="index.html#experience" class="hover:text-primary transition-colors">经历</a>
+      <a href="mailto:liyunzhang2023@163.com" class="hover:text-primary transition-colors">联系</a>
+    </div>
+    <div class="text-zinc-600 text-xs tracking-widest uppercase">© 2026 张力允</div>
+  </div>
 </footer>
 
-</div>
+<!-- ═══════════════ SCRIPT ═══════════════ -->
+<script>
+// ── 导航滚动效果（主题感知） ──
+const navbar = document.getElementById('navbar');
+function updateNavbar() {
+  const dark = document.documentElement.classList.contains('dark');
+  if (window.scrollY > 30) {
+    navbar.style.background = dark ? 'rgba(14,14,16,.88)' : 'rgba(250,250,248,.88)';
+    navbar.style.backdropFilter = 'blur(20px)';
+    navbar.style.boxShadow = dark ? '0 1px 0 rgba(72,71,76,.3)' : '0 1px 0 rgba(211,197,174,.5)';
+  } else {
+    navbar.style.background = 'transparent';
+    navbar.style.backdropFilter = 'none';
+    navbar.style.boxShadow = 'none';
+  }
+}
+window.addEventListener('scroll', updateNavbar);
+
+// ── 主题切换 ──
+const themeBtn = document.getElementById('theme-toggle');
+themeBtn.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const dark = document.documentElement.classList.contains('dark');
+  themeBtn.textContent = dark ? 'light_mode' : 'dark_mode';
+  updateNavbar(); // 切换后立即更新导航颜色
+});
+
+// ── Section 淡入 ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ══════════════════════════════════════════════
+// ── 首页专属彩蛋：技能星座图 ──
+// 暗色模式：技能节点星座网络随鼠标漂浮
+// 明亮模式：金色光晕 + 浮动气泡
+// ══════════════════════════════════════════════
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, mx = 0, my = 0, tmx = 0, tmy = 0;
+const skills = ['Python','FastAPI','Vue 3','WebSocket','Agent','LLM','MongoDB','Next.js','Docker','Prisma','Playwright','TypeScript'];
+let nodes = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  nodes = skills.concat(Array.from({length:25},()=>'')).map((label, i) => ({
+    x: Math.random() * W, y: Math.random() * H,
+    vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+    r: label ? 2 : 1.2,
+    label,
+    opacity: label ? .65 : .35,
+  }));
+}
+resize();
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+
+function draw() {
+  ctx.clearRect(0,0,W,H);
+  mx += (tmx-mx)*.06; my += (tmy-my)*.06;
+  const dark = document.documentElement.classList.contains('dark');
+
+  const rgb = dark ? '104,156,255' : '212,160,23';
+  const textRgb = dark ? '142,179,255' : '121,89,0';
+
+  // 双模式通用：星座节点网络
+  nodes.forEach((n,i) => {
+    n.x = (n.x+n.vx+W)%W; n.y = (n.y+n.vy+H)%H;
+    // 鼠标推力
+    const dx=mx-n.x, dy=my-n.y, d=Math.hypot(dx,dy);
+    if(d<180){ const f=(1-d/180)*.25; n.x-=dx*f*.025; n.y-=dy*f*.025; }
+
+    // 粒子
+    ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${rgb},${n.opacity})`;
+    ctx.fill();
+
+    // 技能标签
+    if(n.label && d<250){
+      ctx.font='11px Inter, sans-serif';
+      ctx.fillStyle=`rgba(${textRgb},${.6*(1-d/250)})`;
+      ctx.fillText(n.label, n.x+6, n.y-4);
+    }
+
+    // 连线
+    for(let j=i+1;j<nodes.length;j++){
+      const m=nodes[j], dd=Math.hypot(n.x-m.x,n.y-m.y);
+      if(dd<100){ ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y);
+        ctx.strokeStyle=`rgba(${rgb},${.055*(1-dd/100)})`; ctx.lineWidth=.6; ctx.stroke(); }
+    }
+  });
+
+  // 鼠标中心光晕
+  const g=ctx.createRadialGradient(mx,my,0,mx,my, dark ? 150 : 300);
+  if (dark) {
+    g.addColorStop(0,'rgba(104,156,255,.07)'); g.addColorStop(1,'rgba(104,156,255,0)');
+  } else {
+    g.addColorStop(0,'rgba(212,160,23,.10)'); g.addColorStop(.5,'rgba(212,160,23,.04)'); g.addColorStop(1,'rgba(212,160,23,0)');
+  }
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
 </body>
 </html>

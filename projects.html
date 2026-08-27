@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<!--
+  文件定位：项目总览页。输入来自作品集导航，处理多个项目卡片的信息层级，
+  输出给招聘方/面试官一个按主题浏览 AutoPaper、Agent Studio 和研究工作台的入口。
+-->
+<html class="dark" lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>项目 · 张力允</title>
+<link href="assets/fonts/fonts.css" rel="stylesheet"/>
+<script src="assets/vendor/tailwind.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          surface: "#0e0e10", "surface-container-low": "#131316",
+          "surface-container": "#19191c", "surface-container-high": "#1f1f23",
+          "surface-container-highest": "#252529",
+          "on-surface": "#e7e4e9", "on-surface-variant": "#acaaaf",
+          primary: "#689cff", "primary-fixed-dim": "#8eb3ff", "primary-container": "#4d8efe",
+          "on-primary": "#001e4a",
+          tertiary: "#dfb7ff", "tertiary-fixed": "#d5a5ff",
+          secondary: "#a8c8ff", "outline-variant": "#48474c",
+          background: "#0e0e10",
+        },
+        fontFamily: { headline: ["Manrope"], body: ["Inter"], label: ["Inter"] },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.75rem", xl: "1rem", full: "9999px" },
+        animation: { "neon-pulse": "neon-pulse 2s ease-in-out infinite" },
+        keyframes: {
+          "neon-pulse": {
+            "0%,100%": { boxShadow: "0 0 6px rgba(104,156,255,.5),0 0 20px rgba(223,183,255,.25)" },
+            "50%": { boxShadow: "0 0 18px rgba(104,156,255,.8),0 0 45px rgba(223,183,255,.5)" },
+          },
+        },
+      },
+    },
+  };
+</script>
+<style>
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-thumb{background:#8eb3ff;border-radius:99px}
+  ::-webkit-scrollbar-track{background:transparent}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+  html{scroll-behavior:smooth}
+  #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+  .project-card{
+    transition:transform .4s cubic-bezier(.23,1,.32,1),border-color .3s,box-shadow .3s;
+    border:1px solid rgba(72,71,76,.4);
+    position:relative; overflow:hidden;
+  }
+  .project-card:hover{
+    transform:translateY(-6px) scale(1.015);
+    border-color:rgba(104,156,255,.45);
+    animation:neon-pulse 2s infinite;
+  }
+  /* 卡片内部扫光效果 */
+  .project-card::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(105deg,transparent 40%,rgba(104,156,255,.04) 50%,transparent 60%);
+    transform:translateX(-100%);transition:transform .6s ease;
+  }
+  .project-card:hover::after{transform:translateX(100%)}
+
+  .grad-text{background:linear-gradient(135deg,#689cff 0%,#dfb7ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  body{
+    background:radial-gradient(circle at 80% -10%,rgba(104,156,255,.08) 0%,transparent 50%),
+              radial-gradient(circle at 10% 85%,rgba(223,183,255,.06) 0%,transparent 40%),#0e0e10;
+    transition: background .4s ease, color .3s ease;
+  }
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+  .fade-in.visible{opacity:1;transform:none}
+
+  /* ═══ 明亮模式覆盖 ═══ */
+  html:not(.dark) body {
+    background: radial-gradient(circle at 80% -10%,rgba(212,160,23,.07) 0%,transparent 50%),
+                radial-gradient(circle at 10% 85%,rgba(121,89,0,.05) 0%,transparent 40%),#fafaf8;
+    color: #1b1c19;
+  }
+  html:not(.dark) ::-webkit-scrollbar-thumb { background: #d4a017; }
+  html:not(.dark) .text-on-surface { color: #1b1c19 !important; }
+  html:not(.dark) .text-on-surface-variant { color: #4f4634 !important; }
+  html:not(.dark) .text-zinc-400 { color: #4f4634 !important; }
+  html:not(.dark) .text-zinc-500 { color: #817662 !important; }
+  html:not(.dark) .bg-surface-container-low  { background-color: #f5f3ee !important; }
+  html:not(.dark) .bg-surface-container      { background-color: #f0eee9 !important; }
+  html:not(.dark) .bg-surface-container-high { background-color: #eae8e3 !important; }
+  html:not(.dark) .bg-surface-container-highest { background-color: #e4e2dd !important; }
+  html:not(.dark) .border-outline-variant\/20,
+  html:not(.dark) .border-outline-variant\/30,
+  html:not(.dark) .border-outline-variant\/40 { border-color: rgba(211,197,174,.5) !important; }
+
+  html:not(.dark) .grad-text {
+    background: linear-gradient(135deg,#795900 0%,#d4a017 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+
+  /* 卡片悬停改为金色，取消霓虹 */
+  html:not(.dark) .project-card { border-color: rgba(211,197,174,.4) !important; }
+  html:not(.dark) .project-card::after { background: linear-gradient(105deg,transparent 40%,rgba(121,89,0,.04) 50%,transparent 60%); }
+  html:not(.dark) .project-card:hover {
+    animation: none !important;
+    box-shadow: 0 16px 40px -8px rgba(121,89,0,.18);
+    border-color: rgba(121,89,0,.3) !important;
+  }
+  /* primary → 金色 */
+  html:not(.dark) .text-primary { color: #795900 !important; }
+  html:not(.dark) .text-primary-fixed-dim { color: #503a00 !important; }
+  html:not(.dark) .border-primary { border-color: #795900 !important; }
+  html:not(.dark) .bg-primary\/10 { background-color: rgba(121,89,0,.08) !important; }
+  html:not(.dark) .bg-primary\/15 { background-color: rgba(121,89,0,.12) !important; }
+  html:not(.dark) .border-primary\/20 { border-color: rgba(121,89,0,.2) !important; }
+  html:not(.dark) .border-primary\/25 { border-color: rgba(121,89,0,.25) !important; }
+  /* tertiary → 暖棕 */
+  html:not(.dark) .text-tertiary { color: #77574c !important; }
+  html:not(.dark) .text-tertiary-fixed { color: #53372d !important; }
+  html:not(.dark) .bg-tertiary\/10 { background-color: rgba(119,87,76,.08) !important; }
+  html:not(.dark) .border-tertiary\/20 { border-color: rgba(119,87,76,.2) !important; }
+  /* secondary */
+  html:not(.dark) .text-secondary { color: #655e4d !important; }
+  html:not(.dark) .bg-secondary\/10 { background-color: rgba(101,94,77,.08) !important; }
+  html:not(.dark) .border-secondary\/20 { border-color: rgba(101,94,77,.2) !important; }
+  /* CTA 按钮 */
+  html:not(.dark) a.from-primary, html:not(.dark) button.from-primary {
+    background: linear-gradient(to right, #795900, #d4a017) !important;
+    color: #ffffff !important;
+  }
+</style>
+</head>
+<body class="text-on-surface font-body overflow-x-hidden min-h-screen">
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-6 md:px-10 py-4 h-18">
+    <a href="index.html" class="text-xl font-bold font-headline tracking-tight grad-text">张力允</a>
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+      <a href="index.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">主页</a>
+      <a href="projects.html" class="text-primary border-b border-primary pb-0.5">项目</a>
+      <a href="index.html#experience" class="text-zinc-400 hover:text-zinc-100 transition-colors">经历</a>
+      <a href="index.html#contact" class="text-zinc-400 hover:text-zinc-100 transition-colors">联系</a>
+    </div>
+    <button id="theme-toggle" class="material-symbols-outlined text-primary active:scale-95 transition-transform">dark_mode</button>
+  </div>
+  <div class="h-px w-full bg-gradient-to-r from-transparent via-outline-variant/40 to-transparent"></div>
+</nav>
+
+<!-- HERO -->
+<header class="relative z-10 pt-36 pb-16 px-6 md:px-10 max-w-7xl mx-auto">
+  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6 text-xs font-label uppercase tracking-widest text-primary-fixed-dim">
+    <span class="material-symbols-outlined text-sm text-primary">folder_open</span>全部项目
+  </div>
+  <h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter mb-6">
+    <span class="grad-text">独立交付</span>的<br/>工程项目
+  </h1>
+  <p class="text-on-surface-variant text-xl max-w-2xl leading-relaxed">
+    从 AI Agent 自动化到全栈 SaaS 系统，每个项目均独立完成产品设计、工程开发到生产部署的全流程。
+  </p>
+</header>
+
+<!-- 项目网格（按含金量重排：01–07） -->
+<main class="relative z-10 px-6 md:px-10 max-w-7xl mx-auto pb-28">
+
+  <!-- 01 · Auto-Paper 论文流水线（头部大横幅） -->
+  <a href="projects/autopaper.html" class="fade-in project-card bg-surface-container rounded-xl p-8 md:p-10 mb-6 group block">
+    <div class="grid md:grid-cols-12 gap-8 items-start">
+      <div class="md:col-span-8">
+        <div class="flex flex-wrap gap-2 mb-5">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">Python</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">Next.js</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">Prisma</span>
+          <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">Playwright</span>
+          <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">LLM Pipeline</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">01</span>
+          <h2 class="text-3xl font-headline font-extrabold">Auto-Paper 论文生成平台</h2>
+        </div>
+        <p class="text-on-surface-variant leading-relaxed mb-6 max-w-2xl">
+          面向科研写作的多节点产品化流水线：预检 → 文献检索 → 多模型生成 → 装配 → Word 交付；Next.js + Prisma + Python Pipeline 全链路独立交付，真实用户可使用。
+        </p>
+        <ul class="space-y-2 text-sm text-on-surface-variant mb-2">
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>fast / standard / high 三档策略 + 异步 Worker + 断点恢复，fast 档 30 分钟内交付可核对引用的 Word。</li>
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>Playwright 浏览器自动化负责文献检索，多 LLM Provider + 对象存储 + Webhook 形成完整交付链路。</li>
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary mt-1.5 flex-shrink-0"></span>已服务 50+ 用户，40+ 人用于课程作业草稿，辅助产出论文获 <strong>MSCE 2026</strong> 录用。</li>
+        </ul>
+      </div>
+      <div class="md:col-span-4 flex flex-col gap-3">
+        <div class="rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container-low">
+          <div class="bg-surface-container px-4 py-2 flex items-center gap-2 border-b border-outline-variant/20">
+            <span class="w-2 h-2 rounded-full bg-red-400/80"></span>
+            <span class="w-2 h-2 rounded-full bg-amber-400/80"></span>
+            <span class="w-2 h-2 rounded-full bg-green-400/80"></span>
+            <span class="ml-2 text-[10px] font-label text-on-surface-variant tracking-wider">auto-paper</span>
+          </div>
+          <img src="assets/personal/autopaper-live-preview.jpg" alt="Auto-Paper 项目页" class="w-full block"/>
+        </div>
+        <div class="flex items-center justify-between text-xs font-label text-on-surface-variant">
+          <span>2026.01 — 至今 · 全栈独立</span>
+          <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform text-base">arrow_forward</span>
+        </div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 02 + 03 并排：AI 实证研究平台 · Agent Studio(AI 游戏) -->
+  <div class="grid md:grid-cols-2 gap-6 mb-6 fade-in">
+
+    <a href="projects/workbench.html" class="project-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[340px] group">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">FastAPI</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">PostgreSQL</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">Next.js</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">02</span>
+          <h2 class="text-2xl font-headline font-extrabold">AI 实证研究平台</h2>
+        </div>
+        <p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+          将量表检索、理论配置与模型试算产品化为线上工作台，聚合 <strong>700+</strong> 量表与 <strong>100+</strong> 理论，FastAPI + Next.js + Prisma 全栈交付。
+        </p>
+        <ul class="space-y-2 text-sm text-on-surface-variant">
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>JWT + FREE/PRO 订阅分级，Prisma Migrate 管理生产库演进，零停机迁移。</li>
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary mt-1.5 flex-shrink-0"></span>上线后 50+ 注册用户、20+ 付费转化（¥39.9 首惠包），真实付费数据验证。</li>
+        </ul>
+      </div>
+      <div class="flex items-center justify-between mt-6">
+        <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2025.12 — 至今 · 全栈独立</span>
+        <span class="material-symbols-outlined text-primary group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+      </div>
+    </a>
+
+    <div class="project-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[340px] cursor-default">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">FastAPI</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">多 Agent</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">Playwright</span>
+          <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">SSE</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">03</span>
+          <h2 class="text-2xl font-headline font-extrabold">Agent Studio · AI 游戏工作台</h2>
+        </div>
+        <p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+          以「自然语言 → 可玩游戏原型」为落地场景，跑通多智能体编排、多模型能力路由、视觉自检闭环、长期记忆与可续跑任务运行时的端到端 Agent 运行时。
+        </p>
+        <ul class="space-y-2 text-sm text-on-surface-variant">
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>8 个异构 Agent（Designer / Coder / Validator / Visual Inspector / Reflector 等）按 DAG 编排 + 视觉自检回路。</li>
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>Intent → Capability → Model 路由，指数退避 + Fallback，单模型故障不拖垮全链路。</li>
+          <li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary mt-1.5 flex-shrink-0"></span>SSE + Checkpoint 持久化任务运行时，刷新 / 重启后可从最近阶段续跑。</li>
+        </ul>
+      </div>
+      <div class="text-xs font-label text-on-surface-variant mt-6 uppercase tracking-wider">2026.02 — 至今 · 独立开发</div>
+    </div>
+  </div>
+
+  <!-- 04 + 05 并排：多 Agent 实验平台 · AMJ 离线学术专家 U 盘 -->
+  <div class="grid md:grid-cols-2 gap-6 mb-6 fade-in">
+
+    <a href="projects/multi-agent.html" class="project-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[320px] group">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">Python</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">Vue 3</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">WebSocket</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">04</span>
+          <h2 class="text-2xl font-headline font-extrabold">多 Agent 实验平台</h2>
+        </div>
+        <p class="text-on-surface-variant text-sm leading-relaxed">
+          面向教学实验独立交付多智能体对话平台：6 个 Agent 角色、21 轮自由对话、WebSocket token 级流式输出与 HITL 工作流中断恢复，已在高校课堂累计服务 <strong>60+</strong> 用户。
+        </p>
+      </div>
+      <div class="flex items-center justify-between mt-6">
+        <span class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2025.07 — 至今 · 全栈独立</span>
+        <span class="material-symbols-outlined text-primary group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+      </div>
+    </a>
+
+    <div class="project-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[320px] cursor-default">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">Qwen3.5-9B</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">QLoRA</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">RAG</span>
+          <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">Ollama</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">05</span>
+          <h2 class="text-2xl font-headline font-extrabold">AMJ 离线学术专家 U 盘</h2>
+        </div>
+        <p class="text-on-surface-variant text-sm leading-relaxed mb-3">
+          面向管理学硕博与青年教师的 100% 离线学术助手：顶刊论文切块入 Chroma 四分库 + bge-small-zh，QLoRA 微调 Qwen3.5-9B 合并导出 GGUF，Ollama + Open WebUI 绿色版打包 U 盘即插即用。
+        </p>
+        <ul class="space-y-1.5 text-xs text-on-surface-variant">
+          <li class="flex items-start gap-2"><span class="w-1 h-1 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>16 篇 AMJ 文献、<strong>346+</strong> chunk，4 子库检索；186 条 Alpaca 训练，7.5h QLoRA。</li>
+          <li class="flex items-start gap-2"><span class="w-1 h-1 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>严格按「维度打分 → 核心缺陷 → 修改方案 → 录用概率」输出，杜绝讨好型回答。</li>
+        </ul>
+      </div>
+      <div class="text-xs font-label text-on-surface-variant mt-6 uppercase tracking-wider">2025.11 — 2025.12 · 研究负责人</div>
+    </div>
+  </div>
+
+  <!-- 06 + 07 并排：BOSS 求职 Agent · Arich 蓝牙 IoT -->
+  <div class="grid md:grid-cols-12 gap-6 fade-in">
+
+    <div class="md:col-span-7 project-card bg-surface-container-low rounded-xl p-8 md:p-10 cursor-default">
+      <div class="grid md:grid-cols-5 gap-6 items-start">
+        <div class="md:col-span-3">
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">浏览器自动化</span>
+            <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">Python</span>
+            <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">Tampermonkey</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">06</span>
+            <h2 class="text-2xl font-headline font-extrabold">BOSS 求职自动化 Agent</h2>
+          </div>
+          <p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+            事件监听 + 本地桥接 + Prompt 注入 + 浏览器自动化：智能投递、多轮 IM 自动回复；冷却、去重、日上限、策略降级、队列化任务与频控，长时稳定运行，单日可打满 Boss 直聘简历额度。
+          </p>
+          <div class="text-xs font-label text-on-surface-variant uppercase tracking-wider">2026.01 — 至今 · 独立负责</div>
+        </div>
+        <div class="md:col-span-2">
+          <div class="relative rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container-low select-none" id="boss-gallery">
+            <div class="flex transition-transform duration-500 ease-in-out" id="boss-slides">
+              
+              <img src="assets/personal/boss-resume-send-modal.jpg"   alt="AI Agent 自动选择简历投递" class="w-full flex-shrink-0 object-cover rounded-xl" draggable="false"/>
+              
+            </div>
+            <button onclick="bossSlide(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-surface/70 backdrop-blur flex items-center justify-center text-on-surface hover:bg-surface transition">
+              <span class="material-symbols-outlined text-base">chevron_left</span>
+            </button>
+            <button onclick="bossSlide(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-surface/70 backdrop-blur flex items-center justify-center text-on-surface hover:bg-surface transition">
+              <span class="material-symbols-outlined text-base">chevron_right</span>
+            </button>
+            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5" id="boss-dots">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary transition-opacity" data-idx="0"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-primary/30 transition-opacity" data-idx="1"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-primary/30 transition-opacity" data-idx="2"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function(){
+          var cur = 0, total = 3;
+          var slides = document.getElementById('boss-slides');
+          var dots = document.querySelectorAll('#boss-dots [data-idx]');
+          function go(n){
+            cur = (n + total) % total;
+            slides.style.transform = 'translateX(-' + cur * 100 + '%)';
+            dots.forEach(function(d){ d.className = 'w-1.5 h-1.5 rounded-full bg-primary/30 transition-opacity'; });
+            dots[cur].className = 'w-1.5 h-1.5 rounded-full bg-primary transition-opacity';
+          }
+          window.bossSlide = function(dir){ go(cur + dir); };
+          setInterval(function(){ go(cur + 1); }, 3500);
+        })();
+      </script>
+    </div>
+
+    <div class="md:col-span-5 project-card bg-surface-container-low rounded-xl p-8 flex flex-col justify-between cursor-default">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-2.5 py-1 rounded-full bg-primary/15 border border-primary/25 text-[11px] font-label uppercase tracking-wider text-primary-fixed-dim">CH582M</span>
+          <span class="px-2.5 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-[11px] font-label uppercase tracking-wider text-tertiary-fixed">BLE / GATT</span>
+          <span class="px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-label uppercase tracking-wider text-secondary">UniApp</span>
+          <span class="px-2.5 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30 text-[11px] font-label uppercase tracking-wider text-on-surface-variant">MounRiver</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant border border-outline-variant/30 px-2.5 py-1 rounded-full">07</span>
+          <h2 class="text-xl font-headline font-extrabold">Arich · CH582M 蓝牙 IoT Demo</h2>
+        </div>
+        <p class="text-on-surface-variant text-sm leading-relaxed mb-3">
+          基于 CH582M 固件与 UniApp 完成 BLE 扫描 / 连接 / notify 与 App 状态联动；MounRiver 编译烧录，熟悉 CH58x 外设驱动与移动端蓝牙（GATT / 特征值）。
+        </p>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          个人兴趣向 IoT Demo，侧重打通「嵌入式固件 ↔ 移动端」端到端链路，编码与联调大量借助 Cursor、Claude Code 等 AI 工具辅助。
+        </p>
+      </div>
+      <div class="text-xs font-label text-on-surface-variant mt-6 uppercase tracking-wider">2025.10 — 2026.03 · 个人项目</div>
+    </div>
+  </div>
+
+  <!-- 返回首页 -->
+  <div class="mt-16 pt-10 border-t border-outline-variant/20 flex justify-between items-center fade-in">
+    <a href="index.html" class="group flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+      <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">west</span>
+      返回主页
+    </a>
+    <a href="index.html#contact" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-tertiary text-on-primary font-bold text-sm hover:shadow-[0_0_25px_rgba(104,156,255,.4)] transition-all active:scale-95">
+      联系我 <span class="material-symbols-outlined text-sm">mail</span>
+    </a>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="relative z-10 border-t border-outline-variant/20 py-10 px-6 md:px-10">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <a href="index.html" class="font-headline font-black text-lg grad-text">张力允</a>
+    <div class="flex flex-wrap justify-center gap-8 text-xs font-label uppercase tracking-widest text-zinc-500">
+      <a href="index.html" class="hover:text-primary transition-colors">主页</a>
+      <a href="projects.html" class="hover:text-primary transition-colors">项目</a>
+      <a href="index.html#experience" class="hover:text-primary transition-colors">经历</a>
+      <a href="mailto:liyunzhang2023@163.com" class="hover:text-primary transition-colors">联系</a>
+    </div>
+    <div class="text-zinc-600 text-xs tracking-widest uppercase">© 2026 张力允</div>
+  </div>
+</footer>
+
+<script>
+// 导航滚动（主题感知）
+const navbar = document.getElementById('navbar');
+function updateNavbar() {
+  const dark = document.documentElement.classList.contains('dark');
+  if (window.scrollY > 30) {
+    navbar.style.background = dark ? 'rgba(14,14,16,.88)' : 'rgba(250,250,248,.88)';
+    navbar.style.backdropFilter = 'blur(20px)';
+    navbar.style.boxShadow = dark ? '0 1px 0 rgba(72,71,76,.3)' : '0 1px 0 rgba(211,197,174,.5)';
+  } else {
+    navbar.style.background = 'transparent';
+    navbar.style.backdropFilter = 'none';
+    navbar.style.boxShadow = 'none';
+  }
+}
+window.addEventListener('scroll', updateNavbar);
+
+// 主题切换
+const themeBtn = document.getElementById('theme-toggle');
+themeBtn.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const dark = document.documentElement.classList.contains('dark');
+  themeBtn.textContent = dark ? 'light_mode' : 'dark_mode';
+  updateNavbar();
+});
+
+// 淡入
+const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// ══════════════════════════════════════
+// 项目页专属彩蛋：几何网格扰动
+// 暗色：鼠标附近的网格节点被推开，形成水波纹扰动
+// 明亮：同样效果但用金色
+// ══════════════════════════════════════
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, mx=0, my=0, tmx=0, tmy=0;
+let grid = [];
+const SPACING = 60;
+
+function buildGrid() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  grid = [];
+  for(let x=0; x<W+SPACING; x+=SPACING)
+    for(let y=0; y<H+SPACING; y+=SPACING)
+      grid.push({ ox:x, oy:y, x, y });
+}
+buildGrid();
+window.addEventListener('resize', buildGrid);
+window.addEventListener('mousemove', e => { tmx=e.clientX; tmy=e.clientY; });
+
+function draw() {
+  ctx.clearRect(0,0,W,H);
+  mx += (tmx-mx)*.07; my += (tmy-my)*.07;
+  const dark = document.documentElement.classList.contains('dark');
+  const dotColor = dark ? 'rgba(104,156,255,' : 'rgba(212,160,23,';
+  const lineColor = dark ? 'rgba(104,156,255,' : 'rgba(212,160,23,';
+
+  grid.forEach(p => {
+    const dx=mx-p.ox, dy=my-p.oy, d=Math.hypot(dx,dy);
+    const push = Math.max(0, 1-d/140)*28;
+    const angle = Math.atan2(dy, dx);
+    p.x = p.ox - Math.cos(angle)*push;
+    p.y = p.oy - Math.sin(angle)*push;
+
+    // 节点
+    const alpha = d<140 ? (.15+(1-d/140)*.25) : .07;
+    ctx.beginPath(); ctx.arc(p.x, p.y, d<80?2:1, 0, Math.PI*2);
+    ctx.fillStyle = dotColor+alpha+')';
+    ctx.fill();
+  });
+
+  // 连线（只连相邻格）
+  for(let i=0;i<grid.length;i++){
+    const p=grid[i];
+    for(let j=i+1;j<grid.length;j++){
+      const q=grid[j];
+      const d=Math.hypot(p.x-q.x,p.y-q.y);
+      if(d<SPACING*1.6){
+        const alpha=.04*(1-d/(SPACING*1.6));
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+        ctx.strokeStyle=lineColor+alpha+')'; ctx.lineWidth=.6; ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

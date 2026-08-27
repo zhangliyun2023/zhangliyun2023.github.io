@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<!--
+  文件定位：AI 实证研究工作台详情页。输入来自项目总览页点击，
+  输出统计计算、AutoPaper 分发、后台交付和研究流程产品化的说明。
+-->
+<html class="dark" lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 实证研究平台 | 张力允</title>
+<link href="../assets/fonts/fonts.css" rel="stylesheet"/>
+<script src="../assets/vendor/tailwind.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-primary-fixed-variant": "#5c4300",
+          "inverse-on-surface": "#f2f1ec",
+          "secondary-fixed": "#ece1cc",
+          "secondary-fixed-dim": "#cfc6b1",
+          "surface-bright": "#fbf9f4",
+          "surface-variant": "#e4e2dd",
+          "surface-container-high": "#eae8e3",
+          "surface-dim": "#dbdad5",
+          "primary-container": "#d4a017",
+          "on-primary-container": "#503a00",
+          "error": "#ba1a1a",
+          "on-background": "#1b1c19",
+          "tertiary": "#77574c",
+          "secondary-container": "#e9dfc9",
+          "on-surface-variant": "#4f4634",
+          "inverse-surface": "#30312e",
+          "on-tertiary-fixed-variant": "#5d4035",
+          "inverse-primary": "#f6be39",
+          "background": "#fbf9f4",
+          "error-container": "#ffdad6",
+          "outline": "#817662",
+          "outline-variant": "#d3c5ae",
+          "on-tertiary-container": "#53372d",
+          "on-error": "#ffffff",
+          "tertiary-fixed": "#ffdbcf",
+          "on-surface": "#1b1c19",
+          "on-error-container": "#93000a",
+          "surface-container-highest": "#e4e2dd",
+          "surface-tint": "#795900",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed": "#2c160d",
+          "tertiary-fixed-dim": "#e7bdaf",
+          "surface-container": "#f0eee9",
+          "on-secondary-container": "#696251",
+          "surface": "#fbf9f4",
+          "on-primary": "#ffffff",
+          "primary-fixed-dim": "#f6be39",
+          "on-primary-fixed": "#261a00",
+          "secondary": "#655e4d",
+          "on-secondary-fixed-variant": "#4d4636",
+          "surface-container-low": "#f5f3ee",
+          "primary-fixed": "#ffdfa0",
+          "primary": "#795900",
+          "on-secondary": "#ffffff",
+          "tertiary-container": "#c7a092",
+          "surface-container-lowest": "#ffffff",
+          "on-secondary-fixed": "#201b0e"
+        },
+        fontFamily: {
+          "headline": ["Manrope"],
+          "body": ["Manrope"],
+          "label": ["Manrope"]
+        },
+        borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        animation: {
+          'neon-pulse': 'neon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        },
+        keyframes: {
+          'neon-pulse': {
+            '0%, 100%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5), 0 0 20px rgba(147, 51, 234, 0.3)' },
+            '50%': { boxShadow: '0 0 15px rgba(59, 130, 246, 0.8), 0 0 40px rgba(147, 51, 234, 0.6)' },
+          }
+        }
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .glass-panel {
+    background: rgba(251, 249, 244, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .dark .glass-panel {
+    background: rgba(27, 28, 25, 0.6);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, #795900 0%, #d4a017 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── 悬停发光效果 ── */
+  .interactive-card {
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    border: 1px solid transparent;
+  }
+  .interactive-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    z-index: 10;
+  }
+  html:not(.dark) .interactive-card:hover {
+    box-shadow: 0 20px 40px -10px rgba(121, 89, 0, 0.18),
+                0 0 0 1px rgba(121, 89, 0, 0.08);
+  }
+  .dark .interactive-card:hover {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    animation: neon-pulse 2s infinite;
+  }
+
+  /* ── Canvas 彩蛋层 ── */
+  canvas#bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ── 暗色模式页面本体覆盖 ── */
+  html.dark body                          { background-color: #09090b; color: #e7e4e9; }
+  html.dark .bg-background                { background-color: #09090b !important; }
+  html.dark .bg-surface-container-lowest  { background-color: #18181b !important; }
+  html.dark .bg-surface-container-low     { background-color: #1c1c1f !important; }
+  html.dark .bg-surface-container         { background-color: #1f1f23 !important; }
+  html.dark .bg-surface-container-high    { background-color: #252529 !important; }
+  html.dark .text-on-surface              { color: #e7e4e9 !important; }
+  html.dark .text-on-surface-variant      { color: #a1a1aa !important; }
+  html.dark .bg-secondary-container       { background-color: rgba(104,156,255,0.12) !important; }
+  html.dark .text-on-secondary-container  { color: #a8c8ff !important; }
+  html.dark .text-gradient {
+    background: linear-gradient(135deg, #689cff 0%, #dfb7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── 截图浏览器 mockup ── */
+  .screenshot-frame {
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+  html:not(.dark) .screenshot-frame { border-color: rgba(121,89,0,0.15); }
+  html.dark .screenshot-frame       { border-color: rgba(104,156,255,0.2); }
+</style>
+</head>
+<body class="bg-background dark:bg-zinc-950 text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<canvas id="bg-canvas"></canvas>
+
+<!-- TopAppBar -->
+<header class="bg-[#fbf9f4]/80 dark:bg-zinc-950/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-[0px_20px_40px_rgba(27,28,25,0.04)] dark:shadow-none">
+  <div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-headline antialiased tracking-tight">
+    <a href="../index.html" class="text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-50">张力允</a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="../index.html">主页</a>
+      <a class="text-[#795900] dark:text-[#d4a017] font-semibold" href="../projects.html">项目</a>
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="../index.html#experience">经历</a>
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="../index.html#contact">联系</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <button class="material-symbols-outlined text-[#795900] dark:text-[#d4a017] active:scale-95 transition-transform" id="theme-toggle">dark_mode</button>
+      <button class="material-symbols-outlined text-[#795900] dark:text-[#d4a017] active:scale-95 transition-transform md:hidden">menu</button>
+    </div>
+  </div>
+  <div class="bg-[#f5f3ee] dark:bg-zinc-900 h-[1px] w-full absolute bottom-0"></div>
+</header>
+
+<main class="pt-24 pb-24 relative z-10">
+
+  <!-- Hero Section -->
+  <section class="px-8 max-w-screen-2xl mx-auto mb-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      <div class="max-w-3xl">
+        <span class="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold mb-4 block">全栈独立项目 / 02</span>
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface dark:text-zinc-50 mb-6">AI 实证研究平台</h1>
+        <p class="text-xl text-on-surface-variant dark:text-zinc-400 leading-relaxed font-light">
+          独立完成从数据库设计、后端 API 到前端页面的完整全栈交付。集成多 Provider LLM，支持构念自动识别与 SEM 穷举建模，生产环境稳定运行。
+        </p>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <a href="../projects.html" class="px-6 py-4 border border-outline-variant/40 rounded-md text-on-surface-variant text-sm font-medium dark:text-zinc-400 dark:border-zinc-700 flex items-center gap-2 hover:border-primary/50 transition-all">
+          <span class="material-symbols-outlined text-base">arrow_back</span>全部项目
+        </a>
+        <a href="https://" target="_blank" rel="noopener" class="px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-white font-semibold rounded-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+          AI 实证研究平台
+        </a>
+        <span class="px-4 py-4 border border-outline-variant/40 rounded-md text-on-surface-variant text-sm font-medium dark:text-zinc-400 dark:border-zinc-700 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">schedule</span>2025.12 — 至今
+        </span>
+      </div>
+    </div>
+
+    <!-- 平台截图展示区（宽屏主视觉） -->
+    <div class="rounded-xl overflow-hidden screenshot-frame bg-surface-container-low dark:bg-zinc-900 shadow-2xl">
+      <!-- 浏览器 chrome bar -->
+      <div class="bg-surface-container dark:bg-zinc-800 px-6 py-3 flex items-center gap-3 border-b border-outline-variant/20 dark:border-zinc-700">
+        <span class="w-3 h-3 rounded-full bg-red-400/80"></span>
+        <span class="w-3 h-3 rounded-full bg-amber-400/80"></span>
+        <span class="w-3 h-3 rounded-full bg-green-400/80"></span>
+        <span class="ml-3 text-xs font-label text-on-surface-variant dark:text-zinc-400 tracking-wider">AI Research Workbench</span>
+      </div>
+      <img src="../assets/personal/ai-research-landing.jpg" alt="AI 实证研究平台落地页" class="w-full block"/>
+    </div>
+  </section>
+
+  <!-- Stats Bento Grid -->
+  <section class="px-8 max-w-screen-2xl mx-auto mb-24">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">FREE/PRO</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">订阅分级权限</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">JWT 鉴权 + bcrypt 加密，API 层拦截未授权请求</p>
+      </div>
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">3 家</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">LLM Provider 统一封装</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">DeepSeek / Gemini / OpenAI 统一接口，构念识别与 SEM 建模</p>
+      </div>
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">零停机</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">数据库版本迁移</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">Prisma migrate 管理 PostgreSQL，生产环境不停机</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Content Sections -->
+  <section class="px-8 max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+    <!-- Sidebar -->
+    <aside class="lg:col-span-3">
+      <div class="sticky top-32 space-y-12">
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-6">项目职责</h4>
+          <ul class="space-y-4 text-on-surface dark:text-zinc-300 font-medium">
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>全栈架构设计</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>FastAPI 后端开发</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>多 Provider LLM 集成</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>数据库设计与迁移</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>Next.js 前端页面</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>生产环境部署</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-6">技术栈</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">FastAPI</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">PostgreSQL</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Prisma</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Next.js</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Recharts</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Pydantic</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">DeepSeek</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Gemini</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-4">角色</h4>
+          <p class="text-on-surface-variant dark:text-zinc-400 text-sm">全栈开发（独立负责）</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="lg:col-span-9 space-y-24">
+
+      <!-- 01 背景与挑战 -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100">
+          <span class="text-sm font-light text-outline-variant">01</span>背景与挑战
+        </h2>
+        <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
+          <p>学术实证研究需要反复调用多个 LLM Provider 进行构念识别与 SEM 建模，同时需要安全的用户权限体系和可追溯的数据库版本管理。</p>
+          <div class="bg-surface-container-low dark:bg-zinc-900/50 p-8 rounded-xl border-l-4 border-primary">
+            <p class="italic text-on-surface dark:text-zinc-200 font-light">"单一 Provider 稳定性不足、手动建模效率低、缺乏用户分级权限——需要从零构建一套生产可用的全栈研究平台。"</p>
+          </div>
+          <p>项目从零开始，独立完成后端 API 设计、数据库建模、多 LLM 封装、前端数据可视化与生产部署的全链路交付。</p>
+        </div>
+      </div>
+
+      <!-- 02 技术设计 -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100">
+          <span class="text-sm font-light text-outline-variant">02</span>技术设计
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-blue-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-blue-400">lock</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">用户权限体系</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">JWT 无状态鉴权、bcrypt 密码加密，FREE / PRO 订阅分级，API 层统一拦截未授权请求。</p>
+          </div>
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-purple-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-purple-400">smart_toy</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">多 Provider LLM 集成</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">DeepSeek / Gemini / OpenAI 统一封装，实现构念自动识别与 SEM 穷举建模，指数退避 + Fallback。</p>
+          </div>
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-cyan-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-cyan-400">database</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">数据库版本管理</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">PostgreSQL + Prisma migrate 管理数据库版本，生产环境不停机迁移，自动生成 Swagger / ReDoc API 文档。</p>
+          </div>
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-amber-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-amber-400">bar_chart</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">数据可视化与导出</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">Next.js + Recharts 前端，SEM 路径图可视化，支持一键导出完整实证研究报告（Word 格式）。</p>
+          </div>
+        </div>
+
+        <!-- 平台截图 -->
+        <div class="mt-12 space-y-6">
+          <div class="screenshot-frame rounded-xl overflow-hidden">
+            <div class="bg-surface-container dark:bg-zinc-800 px-6 py-3 border-b border-outline-variant/20 dark:border-zinc-700 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-400/80"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-400/80"></span>
+              <span class="text-xs font-label text-on-surface-variant dark:text-zinc-400 ml-2">工作台 · 项目管理与统计</span>
+            </div>
+            <img src="../assets/personal/ai-research-dashboard.jpg" alt="AI 实证研究平台工作台" class="w-full block"/>
+          </div>
+          <div class="screenshot-frame rounded-xl overflow-hidden">
+            <div class="bg-surface-container dark:bg-zinc-800 px-6 py-3 border-b border-outline-variant/20 dark:border-zinc-700 flex items-center justify-between">
+              <span class="text-xs font-label text-on-surface-variant dark:text-zinc-400">医疗五 · 五步工作流（上传 → 构念 → 测量模型 → 智能发现 → 模型分析）</span>
+            </div>
+            <img src="../assets/personal/ai-research-workflow.jpg" alt="医疗五项目工作流" class="w-full block"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 项目成果 -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100">
+          <span class="text-sm font-light text-outline-variant">03</span>项目成果
+        </h2>
+        <div class="space-y-8 max-w-4xl">
+          <p class="text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed">从数据库设计到前端可视化的完整全栈交付，独立承担产品设计与工程开发，生产环境稳定运行，真实用户可访问。</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">完整权限体系</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">FREE / PRO 双级订阅，JWT 鉴权，bcrypt 加密，API 层细粒度拦截。</p>
+            </div>
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">SEM 穷举建模</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">LLM 自动识别构念，穷举假设关系路径，生成完整 SEM 拟合报告。</p>
+            </div>
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">Swagger 自动文档</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">FastAPI + Pydantic 校验所有请求数据，自动生成 Swagger / ReDoc 文档。</p>
+            </div>
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">一键报告导出</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">平台一键导出 Word 文档，含构念识别、测量模型、SEM 路径等完整实证流程。</p>
+            </div>
+          </div>
+
+          <!-- 导出成果下载 -->
+          <div class="interactive-card mt-4 p-8 rounded-xl bg-surface-container-low dark:bg-zinc-900 border border-outline-variant/20 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings:'FILL' 1;">description</span>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-bold text-on-surface dark:text-zinc-100 mb-1">医疗五 · 实证研究报告</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">平台一键导出示例，含构念识别、测量模型分析、SEM 路径与拟合指标等完整实证研究流程。</p>
+            </div>
+            <a href="../assets/files/medical5-report.docx" download class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-gradient-to-br from-primary to-primary-container text-white font-semibold text-sm shadow-md hover:shadow-primary/20 transition-all active:scale-95 flex-shrink-0">
+              <span class="material-symbols-outlined text-base">download</span>下载报告
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pagination -->
+  <div class="px-8 max-w-screen-2xl mx-auto mt-24 pt-12 border-t border-outline-variant/20 dark:border-zinc-800 flex justify-between items-center">
+    <a class="group flex flex-col items-start" href="multi-agent.html">
+      <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">上一个项目</span>
+      <span class="text-xl font-headline font-bold group-hover:text-primary transition-colors flex items-center gap-2 text-on-surface dark:text-zinc-100">
+        <span class="material-symbols-outlined">west</span>多 Agent 实验平台
+      </span>
+    </a>
+    <a class="group flex flex-col items-end" href="autopaper.html">
+      <span class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">下一个项目</span>
+      <span class="text-xl font-headline font-bold group-hover:text-primary transition-colors flex items-center gap-2 text-on-surface dark:text-zinc-100">
+        AutoPaper 论文流水线 <span class="material-symbols-outlined">east</span>
+      </span>
+    </a>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-[#f5f3ee] dark:bg-zinc-900 w-full py-12 px-8 relative z-10 mt-16">
+  <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <a href="../index.html" class="text-lg font-black text-zinc-900 dark:text-zinc-100">张力允</a>
+    <div class="flex flex-wrap justify-center gap-8 text-sm tracking-wide uppercase">
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="../projects.html">全部项目</a>
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="../index.html#experience">经历</a>
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="mailto:liyunzhang2023@163.com">Email</a>
+    </div>
+    <p class="text-zinc-500 text-[10px] tracking-widest uppercase">© 2026 张力允</p>
+  </div>
+</footer>
+
+<script>
+  // ── AI 实证研究专属彩蛋：星座图 + 项目关键词发光 ──
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, mx = 0, my = 0, tmx = 0, tmy = 0;
+  const skills = ['FastAPI','PostgreSQL','SEM','LLM','DeepSeek','Gemini','Prisma','Next.js','构念','实证','JWT'];
+  let nodes = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    nodes = skills.concat(Array.from({length:25},()=>'')).map((label, i) => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+      r: label ? 2 : 1.2,
+      label,
+      opacity: label ? .65 : .35,
+    }));
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    mx += (tmx-mx)*.06; my += (tmy-my)*.06;
+    const dark = document.documentElement.classList.contains('dark');
+    const rgb = dark ? '104,156,255' : '212,160,23';
+    const textRgb = dark ? '142,179,255' : '121,89,0';
+
+    nodes.forEach((n,i) => {
+      n.x = (n.x+n.vx+W)%W; n.y = (n.y+n.vy+H)%H;
+      const dx=mx-n.x, dy=my-n.y, d=Math.hypot(dx,dy);
+      if(d<180){ const f=(1-d/180)*.25; n.x-=dx*f*.025; n.y-=dy*f*.025; }
+
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${rgb},${n.opacity})`;
+      ctx.fill();
+
+      if(n.label && d<250){
+        ctx.font='11px Manrope, Inter, sans-serif';
+        ctx.fillStyle=`rgba(${textRgb},${.6*(1-d/250)})`;
+        ctx.fillText(n.label, n.x+6, n.y-4);
+      }
+
+      for(let j=i+1;j<nodes.length;j++){
+        const m=nodes[j], dd=Math.hypot(n.x-m.x,n.y-m.y);
+        if(dd<100){ ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y);
+          ctx.strokeStyle=`rgba(${rgb},${.055*(1-dd/100)})`; ctx.lineWidth=.6; ctx.stroke(); }
+      }
+    });
+
+    const g=ctx.createRadialGradient(mx,my,0,mx,my, dark ? 150 : 300);
+    if (dark) { g.addColorStop(0,'rgba(104,156,255,.07)'); g.addColorStop(1,'rgba(104,156,255,0)'); }
+    else { g.addColorStop(0,'rgba(212,160,23,.10)'); g.addColorStop(.5,'rgba(212,160,23,.04)'); g.addColorStop(1,'rgba(212,160,23,0)'); }
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(draw);
+  }
+
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    themeBtn.textContent = document.documentElement.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+  });
+  draw();
+</script>
+</body>
+</html>

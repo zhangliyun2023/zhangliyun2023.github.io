@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<!--
+  文件定位：多 Agent / Agent Studio 项目详情页。输入来自项目总览页点击，
+  输出多 Agent 协作、工具执行、记忆和可运行交付的项目说明。
+-->
+<html class="dark" lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>多 Agent 实验平台 | 张力允</title>
+<link href="../assets/fonts/fonts.css" rel="stylesheet"/>
+<script src="../assets/vendor/tailwind.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-primary-fixed-variant": "#5c4300",
+          "inverse-on-surface": "#f2f1ec",
+          "secondary-fixed": "#ece1cc",
+          "secondary-fixed-dim": "#cfc6b1",
+          "surface-bright": "#fbf9f4",
+          "surface-variant": "#e4e2dd",
+          "surface-container-high": "#eae8e3",
+          "surface-dim": "#dbdad5",
+          "primary-container": "#d4a017",
+          "on-primary-container": "#503a00",
+          "error": "#ba1a1a",
+          "on-background": "#1b1c19",
+          "tertiary": "#77574c",
+          "secondary-container": "#e9dfc9",
+          "on-surface-variant": "#4f4634",
+          "inverse-surface": "#30312e",
+          "on-tertiary-fixed-variant": "#5d4035",
+          "inverse-primary": "#f6be39",
+          "background": "#fbf9f4",
+          "error-container": "#ffdad6",
+          "outline": "#817662",
+          "outline-variant": "#d3c5ae",
+          "on-tertiary-container": "#53372d",
+          "on-error": "#ffffff",
+          "tertiary-fixed": "#ffdbcf",
+          "on-surface": "#1b1c19",
+          "on-error-container": "#93000a",
+          "surface-container-highest": "#e4e2dd",
+          "surface-tint": "#795900",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed": "#2c160d",
+          "tertiary-fixed-dim": "#e7bdaf",
+          "surface-container": "#f0eee9",
+          "on-secondary-container": "#696251",
+          "surface": "#fbf9f4",
+          "on-primary": "#ffffff",
+          "primary-fixed-dim": "#f6be39",
+          "on-primary-fixed": "#261a00",
+          "secondary": "#655e4d",
+          "on-secondary-fixed-variant": "#4d4636",
+          "surface-container-low": "#f5f3ee",
+          "primary-fixed": "#ffdfa0",
+          "primary": "#795900",
+          "on-secondary": "#ffffff",
+          "tertiary-container": "#c7a092",
+          "surface-container-lowest": "#ffffff",
+          "on-secondary-fixed": "#201b0e"
+        },
+        fontFamily: {
+          "headline": ["Manrope"],
+          "body": ["Manrope"],
+          "label": ["Manrope"]
+        },
+        borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        animation: {
+          'neon-pulse': 'neon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        },
+        keyframes: {
+          'neon-pulse': {
+            '0%, 100%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5), 0 0 20px rgba(147, 51, 234, 0.3)' },
+            '50%': { boxShadow: '0 0 15px rgba(59, 130, 246, 0.8), 0 0 40px rgba(147, 51, 234, 0.6)' },
+          }
+        }
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .glass-panel {
+    background: rgba(251, 249, 244, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .dark .glass-panel {
+    background: rgba(27, 28, 25, 0.6);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, #795900 0%, #d4a017 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── 悬停发光效果 ── */
+  .interactive-card {
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    border: 1px solid transparent;
+  }
+  .interactive-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    z-index: 10;
+  }
+  /* 明亮模式：深金色柔和投影 */
+  html:not(.dark) .interactive-card:hover {
+    box-shadow: 0 20px 40px -10px rgba(121, 89, 0, 0.18),
+                0 0 0 1px rgba(121, 89, 0, 0.08);
+  }
+  /* 暗色模式：冷色调霓虹流光 */
+  .dark .interactive-card:hover {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    animation: neon-pulse 2s infinite;
+  }
+
+  /* ── Canvas 彩蛋层 ── */
+  canvas#bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ── 暗色模式页面本体覆盖 ── */
+  html.dark body                        { background-color: #09090b; color: #e7e4e9; }
+  html.dark .bg-background              { background-color: #09090b !important; }
+  html.dark .bg-surface                 { background-color: #09090b !important; }
+  html.dark .bg-surface-container-lowest { background-color: #18181b !important; }
+  html.dark .bg-surface-container-low   { background-color: #1c1c1f !important; }
+  html.dark .bg-surface-container       { background-color: #1f1f23 !important; }
+  html.dark .bg-surface-container-high  { background-color: #252529 !important; }
+  html.dark .text-on-surface            { color: #e7e4e9 !important; }
+  html.dark .text-on-surface-variant    { color: #a1a1aa !important; }
+  html.dark .border-b-4.border-primary\/20 { border-color: rgba(104,156,255,0.25) !important; }
+  html.dark .bg-secondary-container     { background-color: rgba(104,156,255,0.12) !important; }
+  html.dark .text-on-secondary-container { color: #a8c8ff !important; }
+  html.dark .border-outline-variant\/20 { border-color: rgba(63,63,70,0.35) !important; }
+  html.dark .text-gradient {
+    background: linear-gradient(135deg, #689cff 0%, #dfb7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  html.dark .bg-surface-container-low.dark\:bg-zinc-900\/50,
+  html.dark .bg-surface-container-low  { background-color: #1c1c1f !important; }
+</style>
+</head>
+<body class="bg-background dark:bg-zinc-950 text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<canvas id="bg-canvas"></canvas>
+
+<!-- TopAppBar -->
+<header class="bg-[#fbf9f4]/80 dark:bg-zinc-950/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-[0px_20px_40px_rgba(27,28,25,0.04)] dark:shadow-none">
+  <div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-headline antialiased tracking-tight">
+    <a href="../index.html" class="text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-50">张力允</a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="../index.html">主页</a>
+      <a class="text-[#795900] dark:text-[#d4a017] font-semibold" href="../projects.html">项目</a>
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="../index.html#experience">经历</a>
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="../index.html#contact">联系</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <button class="material-symbols-outlined text-[#795900] dark:text-[#d4a017] active:scale-95 transition-transform" id="theme-toggle">dark_mode</button>
+      <button class="material-symbols-outlined text-[#795900] dark:text-[#d4a017] active:scale-95 transition-transform md:hidden">menu</button>
+    </div>
+  </div>
+  <div class="bg-[#f5f3ee] dark:bg-zinc-900 h-[1px] w-full absolute bottom-0"></div>
+</header>
+
+<main class="pt-24 pb-24 relative z-10">
+
+  <!-- Hero Section -->
+  <section class="px-8 max-w-screen-2xl mx-auto mb-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      <div class="max-w-3xl">
+        <span class="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold mb-4 block">全栈独立项目 / 01</span>
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface dark:text-zinc-50 mb-6">多 Agent 实验平台</h1>
+        <p class="text-xl text-on-surface-variant dark:text-zinc-400 leading-relaxed font-light">
+          独立设计并实现的多智能体协作编排与实验管理系统，支持可视化工作流编排、Human-in-the-Loop 中断恢复与 WebSocket 实时推送。
+        </p>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <a href="../projects.html" class="px-6 py-4 border border-outline-variant/40 rounded-md text-on-surface-variant text-sm font-medium dark:text-zinc-400 dark:border-zinc-700 flex items-center gap-2 hover:border-primary/50 transition-all">
+          <span class="material-symbols-outlined text-base">arrow_back</span>全部项目
+        </a>
+        <a href="../index.html#agent-studio"  class="px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-white font-semibold rounded-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+          多 Agent 实验平台
+        </a>
+        <span class="px-4 py-4 border border-outline-variant/40 rounded-md text-on-surface-variant text-sm font-medium dark:text-zinc-400 dark:border-zinc-700 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">schedule</span>2025.11 — 至今
+        </span>
+      </div>
+    </div>
+
+    <!-- 平台截图轮播 -->
+    <div class="relative rounded-xl overflow-hidden border border-outline-variant/20 dark:border-zinc-800 bg-surface-container-low dark:bg-zinc-900 select-none shadow-2xl" id="ma-gallery">
+      <div class="flex transition-transform duration-500 ease-in-out" id="ma-slides">
+        <img src="../assets/personal/multi-agent-experiments.jpg" alt="实验管理" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-flow-design.jpg" alt="流程图设计" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-workbench.jpg" alt="实验工作台" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-dialogue.jpg" alt="自动运行监控 · 对话详情" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-questionnaire-extract.jpg" alt="问卷提取" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-stats.jpg" alt="统计分析" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-questionnaire.jpg" alt="问卷管理" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        
+        <img src="../assets/personal/multi-agent-assignment.jpg" alt="实验分配" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+        <img src="../assets/personal/multi-agent-export.jpg" alt="数据导出" class="w-full flex-shrink-0 object-contain rounded-xl" draggable="false"/>
+      </div>
+      <button onclick="maSlide(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-surface/80 dark:bg-zinc-900/80 backdrop-blur flex items-center justify-center text-on-surface hover:bg-surface dark:hover:bg-zinc-800 transition">
+        <span class="material-symbols-outlined text-lg">chevron_left</span>
+      </button>
+      <button onclick="maSlide(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-surface/80 dark:bg-zinc-900/80 backdrop-blur flex items-center justify-center text-on-surface hover:bg-surface dark:hover:bg-zinc-800 transition">
+        <span class="material-symbols-outlined text-lg">chevron_right</span>
+      </button>
+      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 flex-wrap justify-center max-w-full px-2" id="ma-dots"></div>
+    </div>
+    <script>
+    (function(){
+      var cur=0,total=10;
+      var slides=document.getElementById('ma-slides');
+      var dotsEl=document.getElementById('ma-dots');
+      for(var i=0;i<total;i++){
+        var d=document.createElement('span');
+        d.className='w-2 h-2 rounded-full transition-opacity cursor-pointer '+(i===0?'bg-primary':'bg-primary/30');
+        d.setAttribute('data-idx',i);
+        d.onclick=function(){ go(parseInt(this.getAttribute('data-idx'))); };
+        dotsEl.appendChild(d);
+      }
+      var dots=dotsEl.querySelectorAll('[data-idx]');
+      function go(n){ cur=(n+total)%total; slides.style.transform='translateX(-'+cur*100+'%)'; dots.forEach(function(d,i){ d.className='w-2 h-2 rounded-full transition-opacity cursor-pointer '+(i===cur?'bg-primary':'bg-primary/30'); }); }
+      window.maSlide=function(dir){ go(cur+dir); };
+      setInterval(function(){ go(cur+1); },4000);
+    })();
+    </script>
+  </section>
+
+  <!-- Stats Bento Grid -->
+  <section class="px-8 max-w-screen-2xl mx-auto mb-24">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">6 种</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">节点状态机</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">pending / running / waiting_human / done / error / skipped</p>
+      </div>
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">实时</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">WebSocket 推送</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">多用户并发 Session，Token 级流式输出</p>
+      </div>
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">HIL</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">Human-in-the-Loop</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">断点暂停，管理员介入后从断点继续</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Content Sections -->
+  <section class="px-8 max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+    <!-- Sidebar -->
+    <aside class="lg:col-span-3">
+      <div class="sticky top-32 space-y-12">
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-6">项目职责</h4>
+          <ul class="space-y-4 text-on-surface dark:text-zinc-300 font-medium">
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>工作流编排引擎</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>Human-in-the-Loop</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>WebSocket 实时通信</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>用户权限管理</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>内置数据分析</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-6">技术栈</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Python</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Node.js</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Vue 3</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">MongoDB</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">WebSocket</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Vue Flow</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-4">角色</h4>
+          <p class="text-on-surface-variant dark:text-zinc-400 text-sm">全栈开发（独立负责）</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="lg:col-span-9 space-y-24">
+
+      <!-- 01 背景与挑战 -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100">
+          <span class="text-sm font-light text-outline-variant">01</span>背景与挑战
+        </h2>
+        <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
+          <p>在多智能体协作实验中，传统方案缺乏可视化编排能力，无法在流程运行时介入干预，且 LLM 调用开销极高，难以支撑反复迭代的实验设计。</p>
+          <div class="bg-surface-container-low dark:bg-zinc-900/50 p-8 rounded-xl border-l-4 border-primary">
+            <p class="italic text-on-surface dark:text-zinc-200 font-light">"需要一个可以像积木一样拼装 Agent 节点、随时暂停让人类介入、测试时不消耗真实 Token 的平台。"</p>
+          </div>
+          <p>整个系统从零开始，独立完成后端编排引擎、前端可视化画布、WebSocket 实时通信与用户权限体系的全栈设计与交付。</p>
+        </div>
+      </div>
+
+      <!-- 02 技术实现 -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100">
+          <span class="text-sm font-light text-outline-variant">02</span>技术设计
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-blue-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-blue-400">account_tree</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">工作流编排引擎</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">自主实现节点状态机（6 种状态），支持条件分支、循环节点与断点恢复，失败时从最近检查点重启。</p>
+          </div>
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-purple-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-purple-400">supervised_user_circle</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">Human-in-the-Loop</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">流程在确认节点自动暂停，WebSocket 向管理员推送审批界面，管理员操作后流程从断点继续执行。</p>
+          </div>
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-cyan-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-cyan-400">hub</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">WebSocket 实时通信</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">全双工通信，多用户并发 Session 独立维护，Agent 输出按 userId 路由，Token 级流式推送至前端。</p>
+          </div>
+          <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-amber-500/10 rounded-lg flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-primary dark:text-amber-400">science</span>
+            </div>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">Mock 测试模式</h3>
+            <p class="text-on-surface-variant dark:text-zinc-400 font-light mt-2">对 LLM 调用层做接口抽象，Mock 模式下测试无需消耗真实 Token，可测试性设计贯穿全系统。</p>
+          </div>
+        </div>
+
+        <!-- 分隔图片区 -->
+        <div class="mt-12 rounded-xl overflow-hidden bg-gradient-to-br from-amber-50 to-stone-100 dark:from-zinc-900 dark:to-zinc-950 p-8 border border-outline-variant/20 dark:border-zinc-800">
+          <div class="flex items-center gap-6 flex-wrap">
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-green-400"></div>
+              <span class="text-sm font-medium text-on-surface dark:text-zinc-300">done</span>
+            </div>
+            <span class="text-outline-variant">→</span>
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></div>
+              <span class="text-sm font-medium text-on-surface dark:text-zinc-300">running</span>
+            </div>
+            <span class="text-outline-variant">→</span>
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+              <span class="text-sm font-medium text-on-surface dark:text-zinc-300">waiting_human ⟵ 管理员干预</span>
+            </div>
+            <span class="text-outline-variant">→</span>
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-green-400"></div>
+              <span class="text-sm font-medium text-on-surface dark:text-zinc-300">done（断点恢复）</span>
+            </div>
+          </div>
+          <p class="text-xs text-on-surface-variant dark:text-zinc-500 mt-4 font-label uppercase tracking-wider">Human-in-the-Loop 流程示意图</p>
+        </div>
+      </div>
+
+      <!-- 03 项目成果 -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100">
+          <span class="text-sm font-light text-outline-variant">03</span>项目成果
+        </h2>
+        <div class="space-y-8 max-w-4xl">
+          <p class="text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed">完整交付了从数据库设计、编排引擎、实时通信到前端可视化的全栈系统，独立承担产品设计与工程开发，生产环境稳定运行。</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">双角色权限体系</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">管理员 / 参与者双角色，批量创建账号，按实验组分配被试，权限隔离。</p>
+            </div>
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">内置数据分析</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">结构化导出（Excel / JSON）、批量 t 检验、文献格式转换（APA / GB/T）。</p>
+            </div>
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">可视化流程画布</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">基于 Vue Flow 实现拖拽式节点编排，实时反映各节点运行状态。</p>
+            </div>
+            <div class="interactive-card p-6 bg-surface-container-lowest dark:bg-zinc-900 rounded-xl">
+              <h4 class="font-bold mb-2 text-on-surface dark:text-zinc-100">零 Token 可测试性</h4>
+              <p class="text-sm text-on-surface-variant dark:text-zinc-400">Mock 模式接口抽象，所有业务逻辑可在不调用真实 LLM 的情况下完整验证。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-[#f5f3ee] dark:bg-zinc-900 w-full py-12 px-8 relative z-10 mt-16">
+  <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <a href="../index.html" class="text-lg font-black text-zinc-900 dark:text-zinc-100">张力允</a>
+    <div class="flex flex-wrap justify-center gap-8 text-sm tracking-wide uppercase">
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="../projects.html">全部项目</a>
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="../index.html#experience">经历</a>
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="mailto:liyunzhang2023@163.com">Email</a>
+    </div>
+    <p class="text-zinc-500 text-[10px] tracking-widest uppercase">© 2026 张力允</p>
+  </div>
+</footer>
+
+<script>
+  // ── 多 Agent 专属彩蛋：星座图 + 项目关键词发光 ──
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, mx = 0, my = 0, tmx = 0, tmy = 0;
+  const skills = ['Agent','Workflow','WebSocket','HIL','Vue Flow','Python','Node','Vue 3','MongoDB','编排','断点'];
+  let nodes = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    nodes = skills.concat(Array.from({length:25},()=>'')).map((label, i) => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+      r: label ? 2 : 1.2,
+      label,
+      opacity: label ? .65 : .35,
+    }));
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    mx += (tmx-mx)*.06; my += (tmy-my)*.06;
+    const dark = document.documentElement.classList.contains('dark');
+    const rgb = dark ? '104,156,255' : '212,160,23';
+    const textRgb = dark ? '142,179,255' : '121,89,0';
+
+    nodes.forEach((n,i) => {
+      n.x = (n.x+n.vx+W)%W; n.y = (n.y+n.vy+H)%H;
+      const dx=mx-n.x, dy=my-n.y, d=Math.hypot(dx,dy);
+      if(d<180){ const f=(1-d/180)*.25; n.x-=dx*f*.025; n.y-=dy*f*.025; }
+
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${rgb},${n.opacity})`;
+      ctx.fill();
+
+      if(n.label && d<250){
+        ctx.font='11px Manrope, Inter, sans-serif';
+        ctx.fillStyle=`rgba(${textRgb},${.6*(1-d/250)})`;
+        ctx.fillText(n.label, n.x+6, n.y-4);
+      }
+
+      for(let j=i+1;j<nodes.length;j++){
+        const m=nodes[j], dd=Math.hypot(n.x-m.x,n.y-m.y);
+        if(dd<100){ ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y);
+          ctx.strokeStyle=`rgba(${rgb},${.055*(1-dd/100)})`; ctx.lineWidth=.6; ctx.stroke(); }
+      }
+    });
+
+    const g=ctx.createRadialGradient(mx,my,0,mx,my, dark ? 150 : 300);
+    if (dark) { g.addColorStop(0,'rgba(104,156,255,.07)'); g.addColorStop(1,'rgba(104,156,255,0)'); }
+    else { g.addColorStop(0,'rgba(212,160,23,.10)'); g.addColorStop(.5,'rgba(212,160,23,.04)'); g.addColorStop(1,'rgba(212,160,23,0)'); }
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(draw);
+  }
+
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    themeBtn.textContent = document.documentElement.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+  });
+  draw();
+</script>
+</body>
+</html>

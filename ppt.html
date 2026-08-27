@@ -1,32 +1,170 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html class="dark" lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>MiraWork · PPT 生成能力展示 | 张力允</title>
 <meta name="description" content="MiraWork 桌面 Agent 自动生成 PPT 的成品展示：中国茶（AI 生图 / 联网搜图对照）、伏安法实验课件、长城人文专题、产品发布会视觉。">
-<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link href="./assets/fonts/fonts.css" rel="stylesheet"/>
+<script src="./assets/vendor/tailwind.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-primary-fixed-variant": "#5c4300",
+          "inverse-on-surface": "#f2f1ec",
+          "secondary-fixed": "#ece1cc",
+          "secondary-fixed-dim": "#cfc6b1",
+          "surface-bright": "#fbf9f4",
+          "surface-variant": "#e4e2dd",
+          "surface-container-high": "#eae8e3",
+          "surface-dim": "#dbdad5",
+          "primary-container": "#d4a017",
+          "on-primary-container": "#503a00",
+          "error": "#ba1a1a",
+          "on-background": "#1b1c19",
+          "tertiary": "#77574c",
+          "secondary-container": "#e9dfc9",
+          "on-surface-variant": "#4f4634",
+          "inverse-surface": "#30312e",
+          "on-tertiary-fixed-variant": "#5d4035",
+          "inverse-primary": "#f6be39",
+          "background": "#fbf9f4",
+          "error-container": "#ffdad6",
+          "outline": "#817662",
+          "outline-variant": "#d3c5ae",
+          "on-tertiary-container": "#53372d",
+          "on-error": "#ffffff",
+          "tertiary-fixed": "#ffdbcf",
+          "on-surface": "#1b1c19",
+          "on-error-container": "#93000a",
+          "surface-container-highest": "#e4e2dd",
+          "surface-tint": "#795900",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed": "#2c160d",
+          "tertiary-fixed-dim": "#e7bdaf",
+          "surface-container": "#f0eee9",
+          "on-secondary-container": "#696251",
+          "surface": "#fbf9f4",
+          "on-primary": "#ffffff",
+          "primary-fixed-dim": "#f6be39",
+          "on-primary-fixed": "#261a00",
+          "secondary": "#655e4d",
+          "on-secondary-fixed-variant": "#4d4636",
+          "surface-container-low": "#f5f3ee",
+          "primary-fixed": "#ffdfa0",
+          "primary": "#795900",
+          "on-secondary": "#ffffff",
+          "tertiary-container": "#c7a092",
+          "surface-container-lowest": "#ffffff",
+          "on-secondary-fixed": "#201b0e"
+        },
+        fontFamily: {
+          "headline": ["Manrope"],
+          "body": ["Manrope"],
+          "label": ["Manrope"]
+        },
+        borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        animation: {
+          'neon-pulse': 'neon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        },
+        keyframes: {
+          'neon-pulse': {
+            '0%, 100%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5), 0 0 20px rgba(147, 51, 234, 0.3)' },
+            '50%': { boxShadow: '0 0 15px rgba(59, 130, 246, 0.8), 0 0 40px rgba(147, 51, 234, 0.6)' },
+          }
+        }
+      },
+    },
+  }
+</script>
 <style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .glass-panel {
+    background: rgba(251, 249, 244, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .dark .glass-panel {
+    background: rgba(27, 28, 25, 0.6);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, #795900 0%, #d4a017 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── 悬停发光效果 ── */
+  .interactive-card {
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    border: 1px solid transparent;
+  }
+  .interactive-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    z-index: 10;
+  }
+  /* 明亮模式：深金色柔和投影 */
+  html:not(.dark) .interactive-card:hover {
+    box-shadow: 0 20px 40px -10px rgba(121, 89, 0, 0.18),
+                0 0 0 1px rgba(121, 89, 0, 0.08);
+  }
+  /* 暗色模式：冷色调霓虹流光 */
+  .dark .interactive-card:hover {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    animation: neon-pulse 2s infinite;
+  }
+
+  /* ── Canvas 彩蛋层 ── */
+  canvas#bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ── 暗色模式页面本体覆盖 ── */
+  html.dark body                        { background-color: #09090b; color: #e7e4e9; }
+  html.dark .bg-background              { background-color: #09090b !important; }
+  html.dark .bg-surface                 { background-color: #09090b !important; }
+  html.dark .bg-surface-container-lowest { background-color: #18181b !important; }
+  html.dark .bg-surface-container-low   { background-color: #1c1c1f !important; }
+  html.dark .bg-surface-container       { background-color: #1f1f23 !important; }
+  html.dark .bg-surface-container-high  { background-color: #252529 !important; }
+  html.dark .text-on-surface            { color: #e7e4e9 !important; }
+  html.dark .text-on-surface-variant    { color: #a1a1aa !important; }
+  html.dark .border-b-4.border-primary\/20 { border-color: rgba(104,156,255,0.25) !important; }
+  html.dark .bg-secondary-container     { background-color: rgba(104,156,255,0.12) !important; }
+  html.dark .text-on-secondary-container { color: #a8c8ff !important; }
+  html.dark .border-outline-variant\/20 { border-color: rgba(63,63,70,0.35) !important; }
+  html.dark .text-gradient {
+    background: linear-gradient(135deg, #689cff 0%, #dfb7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  html.dark .bg-surface-container-low.dark\:bg-zinc-900\/50,
+  html.dark .bg-surface-container-low  { background-color: #1c1c1f !important; }
+</style>
+<style>
+  h1,h2,h3,.head h3{font-family:Manrope,Inter,sans-serif}
   :root{
-    --bg:#fbfbfa; --panel:#fff; --line:#e6e4df; --ink:#1b1b19; --muted:#6b6862;
-    --accent:#0f4c81; --accent-soft:#eef3f8; --chip:#f2f1ee;
+    --bg:#0e0e10; --panel:#19191c; --line:#2e2d32; --ink:#e7e4e9; --muted:#acaaaf;
+    --accent:#689cff; --accent-soft:#17233a; --chip:#1f1f23;
     --shadow:0 1px 2px rgba(27,27,25,.04), 0 8px 24px -12px rgba(27,27,25,.18);
     --shadow-lift:0 2px 6px rgba(27,27,25,.06), 0 22px 44px -18px rgba(27,27,25,.28);
     --skeleton:#eeece7;
   }
-  @media (prefers-color-scheme: dark){
-    :root{ --bg:#141413; --panel:#1c1c1a; --line:#302f2c; --ink:#eeece7; --muted:#9d9a93;
-           --accent:#7fb2e5; --accent-soft:#1d2733; --chip:#26251f;
-           --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
-           --shadow-lift:0 2px 6px rgba(0,0,0,.5), 0 22px 44px -18px rgba(0,0,0,.85);
-           --skeleton:#26251f; }
-  }
+  
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
     margin:0; background:var(--bg); color:var(--ink);
-    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+    font:15px/1.65 Inter,Manrope,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
     -webkit-font-smoothing:antialiased;
   }
   body.locked{overflow:hidden}
@@ -250,9 +388,32 @@
     html{scroll-behavior:auto}
   }
 </style>
+<style>
+  /* 页面内容区让开固定顶栏 */
+  body > .wrap { position:relative; z-index:1; padding-top:112px;
+    max-width:1180px; margin:0 auto; padding-left:32px; padding-right:32px }
+  @media (max-width:768px){ body > .wrap{ padding-left:20px; padding-right:20px } }
+  article, .rule { scroll-margin-top:96px }
+</style>
 </head>
-<body>
-
+<body class="bg-background dark:bg-zinc-950 text-on-surface font-body overflow-x-hidden">
+<canvas id="bg-canvas"></canvas>
+<header class="bg-[#fbf9f4]/80 dark:bg-zinc-950/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-[0px_20px_40px_rgba(27,28,25,0.04)] dark:shadow-none">
+  <div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-headline antialiased tracking-tight">
+    <a href="./index.html" class="text-xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-50">张力允</a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="./index.html">主页</a>
+      <a class="text-[#795900] dark:text-[#d4a017] font-semibold" href="./projects.html">项目</a>
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="./index.html#experience">经历</a>
+      <a class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-[#795900] dark:hover:text-[#d4a017] transition-colors duration-300" href="./index.html#contact">联系</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <button class="material-symbols-outlined text-[#795900] dark:text-[#d4a017] active:scale-95 transition-transform" id="theme-toggle">dark_mode</button>
+      <button class="material-symbols-outlined text-[#795900] dark:text-[#d4a017] active:scale-95 transition-transform md:hidden">menu</button>
+    </div>
+  </div>
+  <div class="bg-[#f5f3ee] dark:bg-zinc-900 h-[1px] w-full absolute bottom-0"></div>
+</header>
 <div class="wrap">
 
   <a class="back" href="./index.html#desktop-agent">
@@ -569,6 +730,83 @@
     }
   }
 })();
+</script>
+<footer class="bg-[#f5f3ee] dark:bg-zinc-900 w-full py-12 px-8 relative z-10 mt-16">
+  <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <a href="./index.html" class="text-lg font-black text-zinc-900 dark:text-zinc-100">张力允</a>
+    <div class="flex flex-wrap justify-center gap-8 text-sm tracking-wide uppercase">
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="./projects.html">全部项目</a>
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="./index.html#experience">经历</a>
+      <a class="text-zinc-500 hover:text-[#795900] dark:hover:text-[#d4a017] underline-offset-4 hover:underline transition-all duration-200" href="mailto:liyunzhang2023@163.com">Email</a>
+    </div>
+    <p class="text-zinc-500 text-[10px] tracking-widest uppercase">© 2026 张力允</p>
+  </div>
+</footer>
+<script>
+  // ── 多 Agent 专属彩蛋：星座图 + 项目关键词发光 ──
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, mx = 0, my = 0, tmx = 0, tmy = 0;
+  const skills = ['Agent','Workflow','WebSocket','HIL','Vue Flow','Python','Node','Vue 3','MongoDB','编排','断点'];
+  let nodes = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    nodes = skills.concat(Array.from({length:25},()=>'')).map((label, i) => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+      r: label ? 2 : 1.2,
+      label,
+      opacity: label ? .65 : .35,
+    }));
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    mx += (tmx-mx)*.06; my += (tmy-my)*.06;
+    const dark = document.documentElement.classList.contains('dark');
+    const rgb = dark ? '104,156,255' : '212,160,23';
+    const textRgb = dark ? '142,179,255' : '121,89,0';
+
+    nodes.forEach((n,i) => {
+      n.x = (n.x+n.vx+W)%W; n.y = (n.y+n.vy+H)%H;
+      const dx=mx-n.x, dy=my-n.y, d=Math.hypot(dx,dy);
+      if(d<180){ const f=(1-d/180)*.25; n.x-=dx*f*.025; n.y-=dy*f*.025; }
+
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${rgb},${n.opacity})`;
+      ctx.fill();
+
+      if(n.label && d<250){
+        ctx.font='11px Manrope, Inter, sans-serif';
+        ctx.fillStyle=`rgba(${textRgb},${.6*(1-d/250)})`;
+        ctx.fillText(n.label, n.x+6, n.y-4);
+      }
+
+      for(let j=i+1;j<nodes.length;j++){
+        const m=nodes[j], dd=Math.hypot(n.x-m.x,n.y-m.y);
+        if(dd<100){ ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y);
+          ctx.strokeStyle=`rgba(${rgb},${.055*(1-dd/100)})`; ctx.lineWidth=.6; ctx.stroke(); }
+      }
+    });
+
+    const g=ctx.createRadialGradient(mx,my,0,mx,my, dark ? 150 : 300);
+    if (dark) { g.addColorStop(0,'rgba(104,156,255,.07)'); g.addColorStop(1,'rgba(104,156,255,0)'); }
+    else { g.addColorStop(0,'rgba(212,160,23,.10)'); g.addColorStop(.5,'rgba(212,160,23,.04)'); g.addColorStop(1,'rgba(212,160,23,0)'); }
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(draw);
+  }
+
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    themeBtn.textContent = document.documentElement.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+  });
+  draw();
 </script>
 </body>
 </html>
