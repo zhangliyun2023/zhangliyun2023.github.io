@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!--
   文件定位：HR 候选人初筛看板详情页。简历 PDF 上的「系统实拍」链接指向这里。
-  截图为真机画面，已按脱敏规则处理（姓名替换为编号、品牌名遮蔽、正文与消息不渲染）。
+  截图为真机画面，只对候选人隐私脱敏（姓名替换为编号、品牌名遮蔽、正文与消息不渲染），
+  系统功能与布局未作任何修改。迭代史对应 HR-Boss-automation-work 仓库的真实提交。
 -->
 <html class="dark" lang="zh-CN">
 <head>
@@ -179,12 +180,17 @@
   <section class="px-8 max-w-screen-2xl mx-auto mb-20">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
       <div class="max-w-3xl">
-        <span class="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold mb-4 block">受托交付 / 企业内部系统</span>
+        <span class="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold mb-4 block">受托交付 · 已投入日常使用</span>
         <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface dark:text-zinc-50 mb-6">HR 候选人初筛看板</h1>
-        <p class="text-xl text-on-surface-variant dark:text-zinc-400 leading-relaxed font-light">
-          一家企业的 HR 每天要在招聘平台上翻几百份投递。我把这件事拆成三段：<strong class="font-medium text-on-surface dark:text-zinc-200">浏览器自动化把简历采下来</strong>、
-          <strong class="font-medium text-on-surface dark:text-zinc-200">大模型按岗位标准分档</strong>、<strong class="font-medium text-on-surface dark:text-zinc-200">人看一眼再决定发不发</strong>。
-          已处理 428 位候选人。
+        <p class="text-xl text-on-surface-variant dark:text-zinc-400 leading-relaxed font-light mb-4">
+          一家企业开了 9 个岗位同时招人，HR 每天要在招聘平台上翻几百份投递。我把这件事拆成三段：
+          <strong class="font-medium text-on-surface dark:text-zinc-200">浏览器自动化把简历采下来</strong>、<strong class="font-medium text-on-surface dark:text-zinc-200">大模型按岗位标准分档</strong>、
+          <strong class="font-medium text-on-surface dark:text-zinc-200">人看一眼再决定发不发</strong>。
+        </p>
+        <p class="text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed font-light">
+          <strong class="font-medium text-on-surface dark:text-zinc-200">这不是一个演示项目。</strong>它已经处理了 428 位候选人，
+          三天里跟着使用者的反馈改了 21 版，最后连同数据库和登录态一起交接到她自己的机器上运行。
+          下面这段迭代史，每一条都是她用出来的问题。
         </p>
       </div>
       <div class="flex gap-3 flex-wrap">
@@ -197,11 +203,12 @@
       </div>
     </div>
 
-    <div class="rounded-lg border border-amber-500/30 bg-amber-500/5 px-6 py-4 mb-10 max-w-4xl">
+    <div class="rounded-lg border border-outline-variant/30 bg-surface-container-low/50 dark:bg-zinc-900/50 px-6 py-4 mb-10 max-w-4xl">
       <p class="text-sm text-on-surface-variant dark:text-zinc-400 font-light leading-relaxed">
-        <strong class="font-medium text-on-surface dark:text-zinc-200">关于下面的截图</strong>——这是真机运行画面，已经过脱敏：
-        候选人姓名替换为顺序编号（替换文本而非打码，无法反解）、用人单位品牌名遮蔽、
-        简历正文与聊天消息整块不渲染。只展示列表形态，不展示任何单条会话详情。经用人方同意。
+        <strong class="font-medium text-on-surface dark:text-zinc-200">下面是真机运行画面</strong>，不是原型稿。遮住的只有候选人隐私——
+        姓名替换成顺序编号（替换文本而非打码，反解不出来）、用人单位品牌名遮蔽、
+        简历正文与聊天内容整块不渲染。<strong class="font-medium text-on-surface dark:text-zinc-200">系统本身没有任何改动</strong>：
+        分档标签、状态徽章、统计数字、按钮、布局全是实际在跑的样子。经用人方同意展示。
       </p>
     </div>
 
@@ -214,18 +221,24 @@
           <span class="ml-3 text-xs font-label text-on-surface-variant dark:text-zinc-400 tracking-wider">BOSS · Recruiting Desk</span>
         </div>
         <img src="../assets/personal/hr-board-all.png" alt="候选人初筛看板列表（已脱敏）" class="w-full block" loading="lazy"/>
-        <figcaption class="px-6 py-4 text-sm text-on-surface-variant dark:text-zinc-400 font-light border-t border-outline-variant/20 dark:border-zinc-700">全部 277 条待回复：每张卡片是一位候选人，左侧色条与标签为大模型判定结果，右侧是当前沟通状态与简历采集状态。</figcaption>
+        <figcaption class="px-6 py-4 text-sm text-on-surface-variant dark:text-zinc-400 font-light border-t border-outline-variant/20 dark:border-zinc-700">全部 277 条待回复。左侧色条与标签是大模型判定结果，右侧是沟通状态与简历采集状态；每条都带「打开对话」「生成草稿」「确认发送」——草稿生成了但不会自动发出去。</figcaption>
       </figure>
   </section>
 
   <!-- Stats -->
   <section class="px-8 max-w-screen-2xl mx-auto mb-24">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       
       <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
         <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">428</span>
         <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">已初筛候选人</p>
         <p class="text-sm text-on-surface-variant mt-2 font-light">278 条直投 + 150 条跨会话合并去重</p>
+      </div>
+      
+      <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
+        <span class="text-5xl font-extrabold tracking-tighter text-primary dark:text-blue-400 mb-2">21</span>
+        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold">迭代版本</p>
+        <p class="text-sm text-on-surface-variant mt-2 font-light">3 天，全部由使用者的实际反馈驱动</p>
       </div>
       
       <div class="interactive-card bg-surface-container-lowest dark:bg-zinc-900 p-10 rounded-xl flex flex-col justify-center border-b-4 border-primary/20 dark:border-zinc-800">
@@ -249,18 +262,22 @@
         <div>
           <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-6">项目职责</h4>
           <ul class="space-y-4 text-on-surface dark:text-zinc-300 font-medium">
-            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>需求拆解与方案设计</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>浏览器自动化采集</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>LLM 判据设计与调优</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>看板前后端开发</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>数据建模与去重</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>交付与运维</li>
+            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>需求拆解与方案设计</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>浏览器自动化采集</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>LLM 判据设计与调优</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>看板前后端开发</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>数据建模与去重</li><li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>交付与运维交接</li>
           </ul>
         </div>
         <div>
           <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-6">技术栈</h4>
           <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Python</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">FastAPI</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Playwright</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">CDP</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">SQLite</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">DeepSeek</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Qwen3-VL</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Prompt Engineering</span>
+            <span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Python</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">FastAPI</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Playwright</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">CDP</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">WebSocket</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">SQLite</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">DeepSeek</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Qwen-VL</span><span class="px-3 py-1 bg-secondary-container dark:bg-zinc-800 text-on-secondary-container dark:text-zinc-300 text-[10px] font-bold uppercase rounded-sm">Prompt Engineering</span>
           </div>
         </div>
         <div>
           <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-4">角色</h4>
           <p class="text-on-surface-variant dark:text-zinc-400 text-sm">独立开发（受企业委托）</p>
+        </div>
+        <div>
+          <h4 class="font-label text-xs uppercase tracking-widest text-primary font-bold mb-4">状态</h4>
+          <p class="text-on-surface-variant dark:text-zinc-400 text-sm">已交付，运行在使用方机器上</p>
         </div>
       </div>
     </aside>
@@ -271,13 +288,13 @@
         <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">01</span>问题</h2>
         <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
           <p>
-            对方开了 9 个岗位同时招人。投递进来的简历质量参差，HR 的时间几乎全花在
-            「打开一份、读完、判断、关掉」这个循环上——而其中大部分在读到第三行就能排除。
-            真正稀缺的不是判断力，是<strong class="font-medium text-on-surface dark:text-zinc-200">把判断力用在值得判断的那部分人身上</strong>。
+            投递进来的简历质量参差，HR 的时间几乎全花在「打开一份、读完、判断、关掉」这个循环上——
+            而其中大部分在读到第三行就能排除。真正稀缺的不是判断力，是
+            <strong class="font-medium text-on-surface dark:text-zinc-200">把判断力用在值得判断的那部分人身上</strong>。
           </p>
           <p>
-            所以这个系统要做的不是替 HR 做决定，是把 428 个人先排成一个有序队列，
-            让人从第一个开始看，而不是从最新一个开始看。
+            所以这个系统要做的不是替她做决定，是把 428 个人先排成一个有序队列，
+            让她从第一个开始看，而不是从最新一个开始看。
           </p>
         </div>
       </div>
@@ -286,31 +303,137 @@
         <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">02</span>把「抓」和「判」拆开</h2>
         <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
           <p>
-            最早的版本是抓一份判一份。结果是改一次判据就得重抓一遍——而抓取要开浏览器、
-            要等页面、会被限流，一轮几个小时；判定纯调模型，一轮几分钟。两件事的成本差了两个数量级，
+            最早的版本是抓一份判一份。结果是改一次判据就得重抓一遍——而抓取要开浏览器、要等页面、
+            会被限流，一轮几个小时；判定纯调模型，一轮几分钟。两件事的成本差了两个数量级，
             绑在一起就等于按最贵的那件计价。
           </p>
           <p>
-            拆开之后：采集侧只负责把简历正文落库，带独立的状态机（<code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">未抓 / 成功 / 内容过短 / 跳过</code>），
-            失败的单独归档等重投；判定侧只读库、只调模型。
-            <strong class="font-medium text-on-surface dark:text-zinc-200">调整判据时重跑的是后者，几分钟出全量新结果。</strong>
-            这是整个项目里最关键的一个决定。
+            拆开之后：采集侧只负责把简历正文落库，带独立的状态机
+            （<code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">未抓 / 成功 / 内容过短 / 跳过</code>，其中「内容过短」和「抓取失败」必须分开，
+            前者是这人简历本来就短，后者才需要重投）；判定侧只读库、只调模型。
+            <strong class="font-medium text-on-surface dark:text-zinc-200">她提一个新的筛选标准，我改 Prompt 重跑，几分钟出全量新结果，一次都不用重抓。</strong>
+            这是整个项目里最关键的一个决定，也是后面那十几次判据调整能当天生效的前提。
           </p>
         </div>
       </div>
 
       <div>
-        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">03</span>判定与兜底</h2>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">03</span>迭代史：每一条都是她用出来的</h2>
+        <p class="text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl mb-12">
+          下面按时间排。左边引号里是她的原话或原意，右边是我做的改动。
+          三天 21 个版本，没有一条是我自己想出来的功能。
+        </p>
+        <div class="max-w-4xl">
+          
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D1</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">看板能看了</h3>
+            
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">第一版：会话列表 + LLM 判定结论。她当天就开始用来过投递。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「同一个人被点开了两次」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">并发协调</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">启动时的补抓流水线和常驻巡检抢同一个采集浏览器。改成巡检检测到流水线在跑就让位，只保留轻量会话同步，跑完再接手。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「这个李先生的回复状态是别人的」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">宁可漏，不可错</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">已回复状态原来只按姓名存，多个同名不同岗的人会串。改成按（姓名 + 岗位）复合键，并标记同名多岗的歧义姓名——岗位对不上时宁可当作「待回复」，也绝不把别人的已读安到他头上。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「2 到 4 年是硬要求，不是越多越好」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">判据来自她，不是我</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">她说得很明确：少于 2 年不行，超过 4 年也一律不合适。判据从单向门槛改成双向卡。欧美 KOL 岗还加了 AI 行业一票否决——非 AI 背景（尤其电商）直接判不合适。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「剪辑岗没作品集看什么」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">差异化判据</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">判据按岗位分化：剪辑 / 视频设计岗必须有作品集，其它岗不作要求。图片作品集走 Qwen-VL 读图，结论里标「VL 已读」，让她知道这条的信息来源是图不是文。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「简历后半段怎么没了」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">边界值</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">附件 PDF 并入在线简历时被截到 6000 字，PDF 全文几千字一进来，尾部连同附件一起被砍。提到 20000。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「结论太长，扫不动」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">为人读，不为模型读</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">工作履历改成所有岗位统一输出时间线，每条独占一行、<code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">YYYY.M-YYYY.M 单位 岗位</code> 极简格式，并给出总正式工作年限。她要的是三秒扫完，不是读作文。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D2</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">一条修了三次的 bug</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">前两次都修在了症状上</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">有些人的结论一直停在旧格式刷不新。第一次判断是并发太高（64）把 DeepSeek 连接打断了，降到 32；还是不行，再降到 16 并把重试从 3 次提到 5 次。第二天才找到真因：重判逻辑遍历的是 <code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">list_candidates()</code>，而它带着 <code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">limit 200</code>——最旧的 71 个人永远轮不到重判。并发只是次要因素。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D3</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「怎么越来越卡」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">键设计</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">会话表里 1138 条活跃、真人只有 285。原因是 <code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">conversation_key</code> 里含 job_url，而 BOSS 的 <code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">securityId</code> 每次轮询都变——同一个人每 30 秒就被新建一行。键改成（平台 + 账号 + 姓名 + 岗位），再跑一次去重：1138 → 263。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D3</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">「有新消息我想马上知道」</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">从轮询到实时</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">先把轮询从 30 秒压到 10 秒、通知 15 秒压到 6 秒。还是不够，就去解 BOSS 聊天的 WebSocket：含 <code class="text-sm px-1.5 py-0.5 rounded bg-surface-container dark:bg-zinc-800">/message/pull</code> 的帧里 lastId 增大就是有新消息。信号触发一轮轻巡检，2–4 秒反应；5 秒冷却把连发合并成一轮；15 秒轮询保留当安全网。看板上加了「实时监听中」的状态灯。</p>
+        </div>
+        <div class="relative pl-10 pb-10 border-l border-outline-variant/25 dark:border-zinc-800 last:border-l-transparent last:pb-0">
+          <span class="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-background dark:ring-zinc-950"></span>
+          <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+            <span class="font-label text-[11px] uppercase tracking-widest text-outline-variant flex-shrink-0">D3</span>
+            <h3 class="text-xl font-bold text-on-surface dark:text-zinc-100">交给她自己跑</h3>
+            <span class="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-label uppercase tracking-wider text-primary flex-shrink-0">交付的终点是别人能独立跑起来</span>
+          </div>
+          <p class="text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-3xl">把数据库、登录态、已下载的附件、运行日志打包，写了 HANDOFF.md。数据库无损精简 304MB → 63MB（只删看板用不到的抓包历史），附件路径改成相对路径。她在自己电脑上打开，看到的内容跟我这边完全一致。</p>
+        </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">04</span>分档长什么样</h2>
         <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
           <p>
-            判定用 DeepSeek 深度思考模式，输出三档：合适 / 一般 / 不合适，并且必须给出理由——
-            理由不是给模型看的，是给 HR 看的，她要能在三秒内判断「这个判定我信不信」。
+            判定用 DeepSeek 深度思考模式，输出三档并且必须给出理由——
+            理由不是给模型看的，是给她看的，她要能在三秒内判断「这个判定我信不信」。
             428 人的分布是 <strong class="font-medium text-on-surface dark:text-zinc-200">不合适 189 / 一般 136 / 合适 103</strong>。
-          </p>
-          <p>
-            有一类简历是图片——设计、剪辑岗尤其多，作品集直接甩几张图。这类走 Qwen3-VL 读图兜底，
-            读出来的内容跟文本简历进同一条判定链路，在看板上标一个「作品集·VL 已读」的徽章，
-            让 HR 知道这条的信息来源是图不是文。
           </p>
         </div>
         
@@ -322,35 +445,22 @@
           <span class="ml-3 text-xs font-label text-on-surface-variant dark:text-zinc-400 tracking-wider">BOSS · Recruiting Desk</span>
         </div>
         <img src="../assets/personal/hr-board-reject.png" alt="不合适分档视图（已脱敏）" class="w-full block" loading="lazy"/>
-        <figcaption class="px-6 py-4 text-sm text-on-surface-variant dark:text-zinc-400 font-light border-t border-outline-variant/20 dark:border-zinc-700">切到「不合适 147」——判定结果直接改变卡片配色与左侧色条，HR 可以整段跳过；但每一条都保留入口，判错了能翻回来。</figcaption>
+        <figcaption class="px-6 py-4 text-sm text-on-surface-variant dark:text-zinc-400 font-light border-t border-outline-variant/20 dark:border-zinc-700">切到「不合适 147」。判定结果直接改变卡片配色与左侧色条，整段可以跳过；但每一条都保留「打开对话」入口——判错了能翻回来，这是刻意留的。</figcaption>
       </figure>
       </div>
 
       <div>
-        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">04</span>为什么不让它自动发消息</h2>
+        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">05</span>为什么不让它自动发消息</h2>
         <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
           <p>
-            系统会为「合适」的候选人生成打招呼草稿，但<strong class="font-medium text-on-surface dark:text-zinc-200">不发</strong>。
-            草稿停在输入框里，HR 看过、可以改，点「确认发送」才出去。
+            系统会为「合适」的候选人生成打招呼草稿，而且分两阶段：还没拿到简历的问
+            「方便发一份您的简历吗」，已经拿到且判定合适的说「这边收到您的简历，帮您推荐」。
+            但<strong class="font-medium text-on-surface dark:text-zinc-200">它不发</strong>。草稿停在输入框里，她看过、可以改，点「确认发送」才出去。
           </p>
           <p>
-            这不是能力问题——自动发很容易。是因为这条链路的另一端是正在找工作的人。
+            这不是能力问题——自动发很容易，一行代码的事。是因为这条链路的另一端是正在找工作的人。
             模型判错一次的代价，对系统是一行日志，对那个人是一次没有回音的投递。
-            采集侧同理，全程只读，不代替用户做任何写操作。
-          </p>
-        </div>
-      </div>
-
-      <div>
-        <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">05</span>工程上踩过的坑</h2>
-        <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
-          <p>
-            平台页面是长期在线跑的，浏览器会崩、会卡在某个 modal 上不动。加了心跳与自愈：
-            检测到会话失效就重建上下文，从上次的进度继续，不从头再来。
-          </p>
-          <p>
-            另一个是同一个人投了多个岗位——平台侧是多条会话，业务上是一个人。
-            428 条里有 150 条是跨会话合并来的，合并键要既能认出同一个人，又不能把同名的两个人并掉。
+            采集侧同理，全程只读。
           </p>
         </div>
       </div>
@@ -359,8 +469,9 @@
         <h2 class="text-3xl font-bold tracking-tight mb-8 flex items-baseline gap-4 text-on-surface dark:text-zinc-100"><span class="text-sm font-light text-outline-variant">06</span>这件事的收尾</h2>
         <div class="space-y-6 text-lg text-on-surface-variant dark:text-zinc-400 leading-relaxed max-w-4xl">
           <p>
-            这套系统里真正可复用的不是那几千行 Python，是<strong class="font-medium text-on-surface dark:text-zinc-200">「昂贵的采集与廉价的判定分离」</strong>
-            这个结构，以及<strong class="font-medium text-on-surface dark:text-zinc-200">「Agent 采集、人做决定」</strong>这条边界。
+            这套系统里真正可复用的不是那几千行 Python，是
+            <strong class="font-medium text-on-surface dark:text-zinc-200">「昂贵的采集与廉价的判定分离」</strong>这个结构，以及
+            <strong class="font-medium text-on-surface dark:text-zinc-200">「Agent 采集、人做决定」</strong>这条边界。
             后续我把这两点作为一个 agent 收进了自己的
             <a href="../index.html" class="text-primary hover:underline underline-offset-4">DOCX Agent Studio</a>，
             复用其中已有的浏览器常驻与人工接管基建——而不是把这些 Python 再搬一遍。
