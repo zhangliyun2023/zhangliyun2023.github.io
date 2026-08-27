@@ -8,7 +8,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>张力允 · 全栈工程师 & AI Agent 开发者</title>
-<style>.anchor-alias{display:block;position:relative;top:-88px;visibility:hidden;height:0}</style>
+<style>[id]{scroll-margin-top:96px}</style>
 <link href="assets/fonts/fonts.css" rel="stylesheet"/>
 <script src="assets/vendor/tailwind.js"></script>
 <script>
@@ -253,7 +253,7 @@
 </section>
 
 <!-- ═══════════════ 技能 ═══════════════ -->
-<section class="relative z-10 py-20 px-6 md:px-10 max-w-7xl mx-auto fade-in">
+<section id="mirawork" data-alias="desktop-agent" class="relative z-10 py-20 px-6 md:px-10 max-w-7xl mx-auto fade-in">
   <div class="mb-12">
     <span class="text-xs font-label uppercase tracking-[.2em] text-primary mb-3 block">技术能力</span>
     <h2 class="text-4xl font-headline font-extrabold tracking-tight">专业技能栈</h2>
@@ -351,7 +351,7 @@
 
   <div class="grid md:grid-cols-12 gap-6">
     <!-- 大卡片 -->
-    <span id="autopaper" class="anchor-alias" aria-hidden="true"></span><a href="projects/autopaper.html" class="md:col-span-7 glow-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[280px] group relative overflow-hidden">
+    <a id="autopaper" href="projects/autopaper.html" class="md:col-span-7 glow-card bg-surface-container rounded-xl p-8 flex flex-col justify-between min-h-[280px] group relative overflow-hidden">
       <div class="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
         <span class="material-symbols-outlined text-[8rem] text-primary">article</span>
       </div>
@@ -372,7 +372,7 @@
 
     <!-- 右侧两个小卡片 -->
     <div class="md:col-span-5 flex flex-col gap-6">
-      <span id="workbench" class="anchor-alias" aria-hidden="true"></span><a href="projects/workbench.html" class="glow-card bg-surface-container rounded-xl p-7 flex flex-col justify-between flex-1 group relative overflow-hidden">
+      <a id="workbench" href="projects/workbench.html" class="glow-card bg-surface-container rounded-xl p-7 flex flex-col justify-between flex-1 group relative overflow-hidden">
         <div class="absolute top-3 right-3 opacity-5 group-hover:opacity-10 transition-opacity">
           <span class="material-symbols-outlined text-[5rem] text-tertiary">science</span>
         </div>
@@ -389,13 +389,13 @@
           <span class="material-symbols-outlined text-primary text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
-      <span id="mirawork" class="anchor-alias" aria-hidden="true"></span><span id="desktop-agent" class="anchor-alias" aria-hidden="true"></span><a href="projects.html" class="glow-card bg-surface-container-high rounded-xl p-7 flex items-center justify-between group">
-          <div>
-            <p class="font-bold text-on-surface mb-1">MiraWork · 编程 + 办公桌面 Agent</p>
-            <p class="text-xs text-on-surface-variant">Electron + coding agent · Changeset 人审后落盘 · 本地读 PDF/Office 出 Word/PPT/图表</p>
-          </div>
-          <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform text-2xl">arrow_forward</span>
-        </a>
+      <a id="agent-studio" href="projects.html" class="glow-card bg-surface-container-high rounded-xl p-7 flex items-center justify-between group">
+        <div>
+          <p class="font-bold text-on-surface mb-1">Agent Studio · AI 游戏工作台</p>
+          <p class="text-xs text-on-surface-variant">8 个异构 Agent · 视觉自检闭环 · SSE 可续跑任务运行时</p>
+        </div>
+        <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform text-2xl">arrow_forward</span>
+      </a>
     </div>
   </div>
 
@@ -408,20 +408,6 @@
       </div>
       <p class="text-[11px] text-on-surface-variant leading-relaxed">Vue 3 + WebSocket · 60+ 课堂用户</p>
     </a>
-    <span id="agent-studio" class="anchor-alias" aria-hidden="true"></span><div class="glow-card bg-surface-container-low rounded-xl p-5">
-      <div class="flex items-center gap-2 mb-2">
-        <span class="material-symbols-outlined text-primary text-lg">account_tree</span>
-        <p class="font-bold text-sm">Agent Studio · 多智能体编排</p>
-      </div>
-      <p class="text-[11px] text-on-surface-variant leading-relaxed">8 个异构 Agent · Vision 质检自愈 · checkpoint 断点续跑</p>
-    </div>
-    <div class="glow-card bg-surface-container-low rounded-xl p-5">
-      <div class="flex items-center gap-2 mb-2">
-        <span class="material-symbols-outlined text-secondary text-lg">description</span>
-        <p class="font-bold text-sm">DOCX Agent Studio</p>
-      </div>
-      <p class="text-[11px] text-on-surface-variant leading-relaxed">本地优先的 Word 诊断 / 补丁 / 审阅 · skill-pack 体系 · 浏览器操作与提交红线</p>
-    </div>
     <div class="glow-card bg-surface-container-low rounded-xl p-5">
       <div class="flex items-center gap-2 mb-2">
         <span class="material-symbols-outlined text-tertiary text-lg">usb</span>
@@ -679,6 +665,14 @@ function draw() {
   requestAnimationFrame(draw);
 }
 draw();
+</script>
+<script>
+// 简历 PDF 上印过 #desktop-agent；站上用的 id 是 mirawork。
+// 用脚本做映射而不是加占位元素 —— 占位元素会变成网格项，撑坏 12 列布局（踩过）。
+if (location.hash === '#desktop-agent') {
+  const t = document.querySelector('[data-alias~="desktop-agent"]');
+  if (t) t.scrollIntoView();
+}
 </script>
 </body>
 </html>
