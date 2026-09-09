@@ -214,6 +214,7 @@
     transition:transform .28s cubic-bezier(.2,.7,.3,1), box-shadow .28s, border-color .28s;
     display:flex;flex-direction:column;
   }
+  a.card{text-decoration:none}
   .card:hover,.card:focus-visible{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
   .card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .cover{position:relative;aspect-ratio:16/9;background:var(--skeleton);overflow:hidden}
@@ -427,12 +428,12 @@
     <p class="tagline">
       以下每一份都由 MiraWork 桌面 Agent 从一句自然语言需求出发，
       自主完成大纲拆解、内容撰写、素材获取（AI 生图 / 联网搜图）、版式排布与配色，
-      最终直接产出可编辑的 .pptx。此处呈现的是渲染后的原始页面，未做任何人工修图或重排。
+      最终直接产出可编辑的 .pptx 或可打开的网页。此处呈现的是渲染后的原始页面，未做任何人工修图或重排。
     </p>
     <div class="meta">
-      <span><b id="statDecks">5</b> 份成品</span>
+      <span><b id="statDecks">5</b> 份 PPT</span>
       <span><b id="statPages">50</b> 页幻灯片</span>
-      <span>4 类主题场景</span>
+      <span><b>2</b> 份网页</span>
       <span>零人工修改</span>
     </div>
     <p class="note">
@@ -456,6 +457,37 @@
   </p>
   <div class="grid" id="gridWorks"></div>
 
+  <h2 class="section" id="html-pages">网页成品 <span class="sub">自包含 HTML，图片已内嵌</span></h2>
+  <p class="section-lede">
+    和 PPT 同一条生成链路，只是交付物换成可滚动的介绍页：版式、配色和配图都在一份 HTML 里，点封面会在新标签打开原页。
+  </p>
+  <div class="grid">
+    <a class="card" href="html/xihu.html" target="_blank" rel="noopener" aria-label="打开《杭州西湖 · 西子湖》网页成品">
+      <span class="cover">
+        <img src="html/thumbs/xihu.jpg" alt="《杭州西湖 · 西子湖》封面" loading="lazy" decoding="async" width="440" height="248">
+        <span class="pages">网页</span>
+        <span class="play">新标签打开 →</span>
+      </span>
+      <span class="body">
+        <span class="head"><span class="t">杭州西湖 · 西子湖</span><span class="kind">人文长页</span></span>
+        <span class="cap">湖山数据、四时与十景收在一页里，水墨浅底配内嵌插画，检验 Agent 把<b>专题叙事</b>做成可滚动网页而不是幻灯片堆字的能力。</span>
+        <span class="tags"><code>自包含 HTML</code><code>图片内嵌</code><code>浅底人文</code></span>
+      </span>
+    </a>
+    <a class="card" href="html/shanghai-night.html" target="_blank" rel="noopener" aria-label="打开《上海 · 夜之城》网页成品">
+      <span class="cover">
+        <img src="html/thumbs/shanghai-night.jpg" alt="《上海 · 夜之城》封面" loading="lazy" decoding="async" width="440" height="248" style="object-position:center 28%">
+        <span class="pages">网页</span>
+        <span class="play">新标签打开 →</span>
+      </span>
+      <span class="body">
+        <span class="head"><span class="t">上海 · 夜之城</span><span class="kind">深色城市页</span></span>
+        <span class="cap">外滩、江岸与弄堂的夜景叙事，深色高对比 + 内嵌实景图，和上面西湖浅底对照：同一类「城市介绍」需求，<b>视觉语言可以整页切换</b>。</span>
+        <span class="tags"><code>自包含 HTML</code><code>深色夜景</code><code>图片内嵌</code></span>
+      </span>
+    </a>
+  </div>
+
   <h2 class="section">更多主题 <span class="sub">已生成，暂未收录</span></h2>
   <div class="soon">
     <div>上市公司财报解读<span>金融 / 数据密集</span></div>
@@ -468,7 +500,7 @@
 
   <footer>
     张力允 · <a href="./index.html">项目集首页</a> · <a href="https://github.com/zhangliyun2023">GitHub</a><br>
-    本页仅展示 MiraWork 生成的 PPT 样张，用于说明 Agent 的产出质量；不含任何产品源码、内部配置或客户数据。
+    本页展示 MiraWork 生成的 PPT 样张与网页成品，用于说明 Agent 的产出质量；不含任何产品源码、内部配置或客户数据。
   </footer>
 
 </div>
