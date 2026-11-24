@@ -1,0 +1,94 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>名字底下的人</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#111d1c;color:#f3e8d7;font:17px/1.75 system-ui,sans-serif}main{max-width:860px;margin:auto;padding-bottom:3rem}figure{margin:0;position:relative;height:clamp(230px,38vh,380px);overflow:hidden;background:#303835}#loc{width:100%;height:100%;object-fit:cover}#face{position:absolute;bottom:12px;left:clamp(16px,4vw,48px);height:62%;aspect-ratio:3/4;object-fit:cover;box-shadow:0 4px 18px #1118;border:3px solid #e3d6bf}section{padding:24px clamp(18px,5vw,48px)}small{color:#d1b795;letter-spacing:.12em}h1{font:500 clamp(31px,5vw,48px)/1.2 Georgia,"Songti SC",serif;margin:.4em 0}p{margin:.8em 0}.choice{display:block;width:100%;text-align:left;color:#1d3531;background:#e8dbc4;border:none;border-radius:3px;padding:13px 16px;margin:9px 0;font:600 16px/1.5 inherit;font-family:inherit;font-size:16px;cursor:pointer}.choice:hover,.choice:focus-visible{background:#fff0d8}#result{border-left:2px solid #b58f5a;padding-left:14px;color:#e5cdaa}button:disabled{opacity:.65}details{margin:20px 0;color:#c4c7bb}summary{cursor:pointer}
+@media(max-width:540px){figure{height:205px}#loc{object-position:58% center}#face{height:78px;left:12px;bottom:8px}}
+</style><main><figure><img id="loc" alt=""><img id="face" alt="沈砚"></figure><section><button id="sound" type="button" style="float:right;background:#e8dbc4;color:#18332c;border:0;border-radius:4px;padding:8px 12px">开启配音</button><small id="k"></small><h1 id="title"></h1><div id="story"></div><div id="result" aria-live="polite"></div><div id="actions"></div><details id="past"><summary>之前发生了什么</summary><ol id="log"></ol></details></section></main>
+<script src="voice-map.js"></script><script>
+const $ = id => document.getElementById(id);
+const key = 'name-underneath-v1';
+let path = [], reading = false;
+try {
+  const save = JSON.parse(localStorage.getItem(key));
+  if (Array.isArray(save?.path) && save.path.length <= 4 && save.path.every(i => i === 0 || i === 1)) {
+    path = save.path;
+    reading = path.length > 0 && save.reading === true;
+  }
+} catch {}
+function save() { try {localStorage.setItem(key, JSON.stringify({path,reading}));} catch {} }
+const voice = new Audio();
+let audible = false, queue = [], context;
+function narrate(){
+  voice.pause();
+  queue = [];
+  if(!audible)return;
+  const texts = reading && path.length ? [$('result').textContent] : [$('title').textContent,...Array.from($('story').children,p=>p.textContent),...Array.from($('actions').children,b=>b.textContent)];
+  queue = texts.map(s=>voices[s]).filter(Boolean);
+  nextLine();
+}
+function nextLine(){
+  if(!audible || !queue.length)return;
+  voice.src='audio/'+queue.shift()+'.mp3';
+  voice.play().catch(()=>{});
+}
+voice.onended=nextLine;
+function cue(){
+  if(!audible)return;
+  const osc=context.createOscillator(), gain=context.createGain();
+  osc.connect(gain);gain.connect(context.destination);
+  osc.frequency.setValueAtTime(820,context.currentTime);osc.frequency.exponentialRampToValueAtTime(320,context.currentTime+.09);
+  gain.gain.setValueAtTime(.09,context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.11);
+  osc.start();osc.stop(context.currentTime+.12);
+}
+$('sound').onclick=()=>{
+  context ||= new (window.AudioContext||window.webkitAudioContext)();context.resume();
+  audible=!audible;$('sound').textContent=audible?'关闭配音':'开启配音';cue();narrate();
+};
+function button(label, act) {
+  const el = document.createElement('button');
+  el.className = 'choice'; el.textContent = label; el.onclick = ()=>{cue();act()}; $('actions').append(el);
+}
+function scene(i) {
+  const [school,work,crisis] = path;
+  return [
+    ['18岁 · 教务处','签个字，你就不用高考了',
+     ['你叫沈砚。主任递来一支笔。林周按住了你的录取通知书：“你看清楚，下面是谁的名字。”','姓名条贴歪了，底下露出半个“林”字。主任拔下笔帽：“你爸刚来过。签吧。”','走廊上，你妈举着手机等拍照。林周看见了，张嘴就要喊。'],
+     ['喊妈妈拍照，当着镜头签','扣住通知书，问他想要什么'],
+     ['“妈，拍吧。”主任替你按住纸角。快门响了。晚上学校发来喜报，照片里还有林周那只没来得及收回的手。','“让我妈看一眼。她在楼下等。”你把纸递给他。五分钟后他真还了。你签完下楼，他妈还在打电话：“对，保送，不用考了！”']],
+    ['20岁 · 酒店前台','还有十二分钟，新娘就要进场',
+     ['你进了家里的酒店。同一个宴会厅卖给两场婚礼，经理躲进了厕所。两个新娘都在等你开门。','隔壁茶厅勉强坐得下。楼上也有个大包间，你舅舅正请客。'],
+     ['我搬桌子，把茶厅改成婚宴厅','打给舅舅，借楼上的包间'],
+     ['你量过门宽，拆了两扇屏风，连坐轮椅的奶奶都有地方。新娘给你留了块蛋糕。第二天她妹妹也来找你订酒席。','电话只响两声。楼上的人端着没吃完的菜让了座。两场婚礼准点开席。爸爸把备用钥匙丢给你：“下次不用问我。”']],
+    ['22岁 · 后厨','少的八千块，算谁头上？',
+     [work===0?'两年里，你把茶厅做成了店里最难订的厅。现在经理找你拿主意。':'两年里，你替酒店借过车、借过场。现在连经理求人都先找你。','小厨师拿着工资条堵门：“八千块的鱼是领班签收的，凭什么从我工资里扣？”','领班从冷库出来。是林周。他避开你的眼睛：“他在试用期。扣我的，我这个月就白干了。”'],
+     ['把工资补回去，让林周自己解释','让小厨师先签字，宴会完了再说'],
+     ['你把自己的奖金垫进去，让两人把经过写在收货单背面。鱼最终找回来了，小厨师留下。你把那张单子夹进账本，从此每笔扣款得过你手。','小厨师盯着那张纸，签了。宴会结束，你先忘了。发薪日他把围裙叠在前台，再也没回来。林周升了经理。']],
+    ['23岁 · 签约宴','这次，轮到你妈在楼下等',
+     ['你要接手酒店。合同还没送到，送花的小伙子先把签字笔递给你：“等会儿你爸会说，别看最后一页，菜要凉了。”','门开了。爸爸笑着递合同：“别看最后一页了，菜要凉了。”','小伙子低声说：“上一回我在这儿送花。等你签完，酒店卖了，连我妈的工钱都没结。这一天，我过第二次了。”',school===1?'林周站在门边：“当年你肯让我把通知书拿下楼。今天，要不要也先拿给你妈看？”':'签约台后亮起你的保送喜报。林周指着照片里自己的手：“上次这么多人看着，你敢签。这次呢？”'],
+     ['把合同拿下楼，给妈妈看','先扣住笔，请送花的人坐下说'],
+     ['你妈戴上老花镜，指着末页：“酒店归买家，欠的工资算你的。你有这么多钱？”你第一次当着满桌亲戚说：“爸，今天不签。”',crisis===0?'他摊开妈妈的欠薪条。你叫来仍在后厨的小厨师。小厨师翻出当年的账本：“沈总说过，每笔扣款都得有他的字。这上面怎么没有？”买家先收起了笔。':'他说他妈妈是洗碗工，三个月没领工资。你要找人核对。林周说“没有这回事”；当年那个肯当面说实话的小厨师，电话早就打不通了。你让客人散了，留下来一笔笔查。']]
+  ][i];
+}
+function draw() {
+  const n = reading ? path.length-1 : path.length;
+  $('actions').replaceChildren(); $('story').replaceChildren(); $('result').textContent='';
+  const line = s => {const p=document.createElement('p');p.textContent=s;$('story').append(p)};
+  $('loc').src=['foyer','foyer','office','stage','stage'][n]+'.jpg';
+  $('face').src='shen'+['18','18','22','23','23'][n]+'.jpg';
+  $('log').replaceChildren();
+  path.forEach((v,i)=>{const li=document.createElement('li');li.textContent=scene(i)[3][v];$('log').append(li)});
+  $('past').hidden=!path.length;
+  if(n===4){
+    $('k').textContent='尾声 · 散席以后'; $('title').textContent=path[3]===0?'那支没落下去的笔':'多留的一把椅子';
+    line(path[3]===0?'交易延期。爸爸收走你的钥匙。第二天起，你和妈妈在前台一张张核欠薪条。':'买家没能在饭桌上拿走酒店。你挪开签约台的花，让没领到工资的人一个个坐下。');
+    line(path[0]===1?'散场时林周把一张旧照片发给你。他妈拿着你的通知书，笑得眼睛都眯起来了。你打了半天字，最后只发出一句：“那天，她后来是怎么知道的？”':'散场时林周发来当年的喜报。第一次，你把照片放大，去看自己身边那个被裁掉半张脸的人。');
+    button('重新选一次',()=>{path=[];save();draw()});
+  }else{
+    const [age,title,lines,actions,results]=scene(n);
+    $('k').textContent=age; $('title').textContent=title; lines.forEach(line);
+    if(reading){$('result').textContent=results[path[n]];button(n===3?'看结局':'接着看',()=>{reading=false;save();draw()})}
+    else actions.forEach((s,i)=>button(s,()=>{path.push(i);reading=true;save();draw();$('result').scrollIntoView({block:'center'})}));
+  }
+  window.scrollTo(0,0);narrate();
+}
+draw();
+</script></html>
